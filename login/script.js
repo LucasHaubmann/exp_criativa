@@ -5,7 +5,7 @@ const regex = {
 };
 
 function validarCPF(cpf) {
-  const cleaned = cpf.replace(/[^\d]+/g, '');
+  const cleaned = cpf.replace(/\D/g, "");
   if (cleaned.length !== 11 || /^(\d)\1+$/.test(cleaned)) return false;
   let soma = 0;
   for (let i = 0; i < 9; i++) soma += parseInt(cleaned.charAt(i)) * (10 - i);
@@ -21,10 +21,7 @@ function validarCPF(cpf) {
 
 function validarDataNascimento(dataStr) {
   const [dia, mes, ano] = dataStr.split('/').map(Number);
-
-  if (!dia || !mes || !ano || String(ano).length !== 4) {
-    return "Data inválida.";
-  }
+  if (!dia || !mes || !ano || String(ano).length !== 4) return "Data inválida.";
 
   const data = new Date(ano, mes - 1, dia);
   const hoje = new Date();
@@ -45,7 +42,7 @@ function validarDataNascimento(dataStr) {
 function validateField(name, value) {
   switch (name) {
     case "nome":
-      return regex.nome.test(value) ? "" : "Nome deve ter pelo menos 3 letras e não pode conter apenas espaços.";
+      return regex.nome.test(value) ? "" : "Nome inválido.";
     case "cpf":
       return validarCPF(value) ? "" : "CPF inválido.";
     case "dataNascimento":
@@ -66,6 +63,25 @@ function showError(field, message) {
     el.textContent = message;
     el.style.display = message ? "block" : "none";
   }
+}
+
+function aplicarMascaraCPF(input) {
+  input.addEventListener("input", function () {
+    let value = input.value.replace(/\D/g, "").slice(0, 11);
+    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+    value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    input.value = value;
+  });
+}
+
+function aplicarMascaraData(input) {
+  input.addEventListener("input", function () {
+    let value = input.value.replace(/\D/g, "").slice(0, 8);
+    if (value.length >= 3) value = value.replace(/(\d{2})(\d{1,2})/, "$1/$2");
+    if (value.length >= 6) value = value.replace(/(\d{2}\/\d{2})(\d{1,4})/, "$1/$2");
+    input.value = value;
+  });
 }
 
 function setupValidation(formId, fields) {
@@ -89,7 +105,6 @@ function setupValidation(formId, fields) {
 
     input.addEventListener("input", () => {
       const value = input.value.trim();
-
       if (!value) {
         showError(field, "");
         return;
@@ -104,76 +119,35 @@ function setupValidation(formId, fields) {
     });
   });
 
+  // Alerta no submit
   form.addEventListener("submit", (e) => {
     e.preventDefault();
+    const camposInvalidos = [];
     fields.forEach((field) => {
       const inputEl = form.querySelector(`[name="${field}"]`);
       const value = inputEl.value.trim();
-      if (!value) {
-        showError(field, "");
-        return;
-      }
       const error = validateField(field, value);
-      showError(field, error);
+      if (!value || error) {
+        camposInvalidos.push(field);
+      }
     });
-  });
-}
 
-function aplicarMascaraCPF(input) {
-  input.addEventListener("input", function () {
-    let value = input.value.replace(/\D/g, "").slice(0, 11);
-    value = value.replace(/(\d{3})(\d)/, "$1.$2");
-    value = value.replace(/(\d{3})(\d)/, "$1.$2");
-    value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-    input.value = value;
-  });
-}
-
-function aplicarMascaraData(input) {
-  input.addEventListener("input", function () {
-    let value = input.value.replace(/\D/g, "").slice(0, 8);
-    if (value.length >= 3) value = value.replace(/(\d{2})(\d{1,2})/, "$1/$2");
-    if (value.length >= 6) value = value.replace(/(\d{2}\/\d{2})(\d{1,4})/, "$1/$2");
-    input.value = value;
+    if (camposInvalidos.length > 0) {
+      alert("Por favor, corrija os seguintes campos: " + camposInvalidos.join(", "));
+    } else {
+      alert("Cadastro realizado com sucesso!");
+      form.reset();
+      fields.forEach((field) => showError(field, ""));
+    }
   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (window.particlesJS) {
-    window.particlesJS("particles-js", {
-      particles: {
-        number: { value: 100 },
-        shape: { type: "circle" },
-        opacity: { value: 0.5 },
-        size: { value: 3 },
-        move: { speed: 2 },
-        line_linked: {
-          enable: true,
-          distance: 150,
-          color: "#ffffff",
-          opacity: 0.4,
-          width: 1,
-        },
-      },
-      interactivity: {
-        detect_on: "canvas",
-        events: {
-          onhover: { enable: true, mode: "repulse" },
-          onclick: { enable: true, mode: "push" },
-        },
-        modes: {
-          repulse: { distance: 100, duration: 0.4 },
-          push: { particles_nb: 4 },
-        },
-      },
-    });
-  }
-
-  setupValidation("signup-form", ["nome", "cpf", "dataNascimento", "email", "senha"]);
-  setupValidation("login-form", ["loginEmail"]);
-
   const cpfInput = document.querySelector("input[name='cpf']");
   const dataInput = document.querySelector("input[name='dataNascimento']");
   if (cpfInput) aplicarMascaraCPF(cpfInput);
   if (dataInput) aplicarMascaraData(dataInput);
+
+  setupValidation("signup-form", ["nome \N", "cpf\N", "dataNascimento\N", "email\N", "senha"]);
+  setupValidation("login-form", ["loginEmail"]);
 });
