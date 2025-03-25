@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Produtos</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --cor-1: #3CA6A6;
+            --cor-2: #3CA6A6;
+            --cor-3: #026773;
+            --cor-4: #024959;
+            --cor-5: #012E40;
+            --cor-botao: #007BFF; /* Azul para os botões */
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--cor-1);
+            margin: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: white; /* Alterado para branco */
+            margin: 0; /* Remove a margem padrão */
+            flex-grow: 1; /* Permite que o título ocupe o espaço disponível */
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--cor-5);
+            padding: 10px 20px;
+        }
+
+        .icon-wrapper {
+            cursor: pointer;
+            color: white;
+            font-size: 24px;
+        }
+
+        .header img {
+            height: 40px;
+        }
+
+        .button-container {
+            text-decoration: white;
+            display: flex;
+            color: #ffffff;
+            align-items: center;
+            justify-content: center; /* Centraliza o conteúdo */
+            margin: 20px 0; /* Espaço acima e abaixo do título */
+        }
+
+        .add-product-btn {
+            margin-left: 20px; /* Espaço entre o título e o botão */
+            padding: 10px;
+            background-color: var(--cor-3);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .add-product-btn:hover {
+            background-color: var(--cor-4);
+        }
+
+        .view-btn, .edit-btn, .delete-btn {
+            padding: 5px 10px;
+            background-color: var(--cor-botao); /* Azul para os botões */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px; /* Espaçamento entre os botões */
+        }
+
+        .view-btn:hover, .edit-btn:hover, .delete-btn:hover {
+            background-color: darkblue; /* Cor mais escura ao passar o mouse */
+        }
+
+        .product-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .product-card {
+            background: white;
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--cor-4);
+            margin: 10px 0;
+        }
+
+        .product-price {
+            font-size: 14px;
+            color: var(--cor-3);
+            font-weight: bold;
+        }
+
+        .product-price img {
+            width: 24px;
+            height: 24px; 
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="icon-wrapper">
+            <i data-lucide="menu" id="menu-btn"></i>
+        </div>
+        <img src="point back firelogo.png" alt="">
+        <div class="icon-wrapper user-icon">
+            <i data-lucide="user-circle"></i>
+        </div>
+    </header>
+    
+    <div class="button-container">
+        <h2>Produtos Cadastrados</h2>
+        <button onclick="window.location.href='../cadastro_produto/tela_cadastro_produtos.html'" class="add-product-btn">Adicionar Produto</button>
+    </div>
+
+    <div class="product-container">
+        <div class="product-card">
+            <img src="../imagens/cpu.jpeg" alt="CPU">
+            <div class="product-name">Processador Intel i7</div>
+            <div class="product-price">5000 Pontos</div>
+            <div class="product-price">
+                <img src="../imagens/p_moeda_azul.png" alt="Pontos">
+            </div>
+            <button class="view-btn">Ver</button>
+            <button class="edit-btn">Editar</button>
+            <button class="delete-btn">Excluir</button>
+        </div>
+        <div class="product-card">
+            <img src="../imagens/gpu.jpeg" alt="GPU">
+            <div class="product-name">Placa de Vídeo RTX 3080</div>
+            <div class="product-price">12000 Pontos</div>
+            <div class="product-price">
+                <img src="../imagens/p_moeda_azul.png" alt="Pontos">
+            </div>
+            <button class="view-btn">Ver</button>
+            <button class="edit-btn">Editar</button>
+            <button class="delete-btn">Excluir</button>
+        </div>
+        <div class="product-card">
+            <img src="../imagens/memoria.jpeg" alt="Memória RAM">
+            <div class="product-name">Memória RAM 16GB</div>
+            <div class="product-price">3000 Pontos</div>
+            <div class="product-price">
+                <img src="../imagens/p_moeda_azul.png" alt="Pontos">
+            </div>
+            <button class="view-btn">Ver</button>
+            <button class="edit-btn">Editar</button>
+            <button class="delete-btn">Excluir</button>
+        </div>
+        <div class="product-card">
+            <img src="../imagens/ssd.jpeg" alt="SSD">
+            <div class="product-name">SSD 1TB NVMe</div>
+            <div class="product-price">7000 Pontos</div>
+            <div class="product-price">
+                <img src="../imagens/p_moeda_azul.png" alt="Pontos">
+            </div>
+            <button class="view-btn">Ver</button>
+            <button class="edit-btn">Editar</button>
+            <button class="delete-btn">Excluir</button>
+        </div>
+    </div>
+    <div class="product-container">
+        <div class="product-card">
+            <img src="../imagens/monitor.jpeg" alt="monitor">
+            <div class="product-name">Monitor 144hz</div>
+            <div class="product-price">19000 Pontos</div>
+            <div class="product-price">
+                <img src="../imagens/p_moeda_azul.png" alt="Pontos">
+            </div>
+            <button class="view-btn">Ver</button>
+            <button class="edit-btn">Editar</button>
+            <button class="delete-btn">Excluir</button>
+        </div>
+        <div class="product-card">
+            <img src="../imagens/teclado.jpeg" alt="teclado">
+            <div class="product-name">Teclado Mecânico</div>
+            <div class="product-price">400 Pontos</div>
+            <div class="product-price">
+                <img src="../imagens/p_moeda_azul.png" alt="Pontos">
+            </div>
+            <button class="view-btn">Ver</button>
+            <button class="edit-btn">Editar</button>
+            <button class="delete-btn">Excluir</button>
+        </div>
+        <div class="product-card">
+            <img src="../imagens/mouse.jpeg" alt="mouse">
+            <div class="product-name">Mouse Gamer GT Nebula</div>
+            <div class="product-price">450 Pontos</div>
+            <div class="product-price">
+                <img src="../imagens/p_moeda_azul.png" alt="Pontos">
+            </div>
+            <button class="view-btn">Ver</button>
+            <button class="edit-btn">Editar</button>
+            <button class="delete-btn">Excluir</button>
+        </div>
+        <div class="product-card">
+            <img src="../imagens/headset.jpeg" alt="headset">
+            <div class="product-name">Headset Gamer</div>
+            <div class="product-price">450 Pontos</div>
+            <div class="product-price">
+                <img src="../imagens/p_moeda_azul.png" alt="Pontos">
+            </div>
+            <button class="view-btn">Ver</button>
+            <button class="edit-btn">Editar</button>
+            <button class="delete-btn">Excluir</button>
+        </div>
+    </div>
+</body>
+</html>

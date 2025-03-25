@@ -183,6 +183,14 @@ body.mobile-style .forgot-password:active {
 margin-bottom: 20px;
 }
 
+#particles-js {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  top: 0;
+  left: 0;
+}
 
 /* Media Query para zoom em telas maiores */
 @media screen and (min-width: 480px) {

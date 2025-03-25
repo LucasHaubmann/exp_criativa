@@ -148,6 +148,40 @@ document.addEventListener("DOMContentLoaded", () => {
   if (cpfInput) aplicarMascaraCPF(cpfInput);
   if (dataInput) aplicarMascaraData(dataInput);
 
-  setupValidation("signup-form", ["nome \N", "cpf\N", "dataNascimento\N", "email\N", "senha"]);
+  setupValidation("signup-form", ["nome", "cpf", "dataNascimento", "email", "senha"]);
   setupValidation("login-form", ["loginEmail"]);
+});
+
+window.addEventListener("load", () => {
+  if (window.particlesJS) {
+    window.particlesJS("particles-js", {
+      particles: {
+        number: { value: 80 },
+        shape: { type: "circle" },
+        opacity: { value: 0.5 },
+        size: { value: 3 },
+        move: { speed: 2 },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: "#ffffff",
+          opacity: 0.4,
+          width: 1,
+        },
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: {
+          onhover: { enable: true, mode: "repulse" },
+          onclick: { enable: true, mode: "push" },
+        },
+        modes: {
+          repulse: { distance: 100, duration: 0.4 },
+          push: { particles_nb: 4 },
+        },
+      },
+    });
+  } else {
+    console.error("particles.js não carregado.");
+  }
 });
