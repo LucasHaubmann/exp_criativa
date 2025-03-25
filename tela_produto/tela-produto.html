@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produto - Mouse Logitech</title>
+    <link rel="stylesheet" href="../menu-principal/styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar" id="sidebar">
+        <button class="close-btn" id="close-btn">&times;</button>
+        <ul>
+            <li><a href="../menu-principal/index.html">Hardware</a></li>
+            <li><a href="../menu-principal/index.html">Monitor</a></li>
+            <li><a href="../menu-principal/index.html">PC Gamer</a></li>
+            <li><a href="../menu-principal/index.html">Periféricos</a></li>
+        </ul>
+    </nav>
+    <header class="header">
+        <div class="icon-wrapper">
+            <i data-lucide="menu" id="menu-btn"></i>
+        </div>
+        <img src="../imagens/Point_Back_LogoAzul.png" alt="">
+        <div class="icon-wrapper user-icon">
+            <i data-lucide="user-circle"></i>
+        </div>
+        <div class="user-menu" id="user-menu">
+            <ul>
+                <li><a href="../tela_vendedor/index.html">Perfil vendedor</a></li>
+                <li><a href="../cadastro_cliente/index.html" id="logout ">Sair</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="produto-container">
+        <div class="produto-info">
+            <div class="produto-imagem">
+                <img src="../imagens/mouse-logitech.jpg" alt="Mouse Logitech">
+                <h1 class="nome-produto-tela-produto">Mouse Logitech</h1>
+            </div>
+            <div class="info-produto">
+                <span class="preco-produto-tela-produto">R$ 100,00</span>
+                <div class="acoes-produto">
+                    <button class="add-cart">Adicionar ao carrinho</button>
+                    <button class="buy-now">Comprar agora</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="descricao-completa">
+            <p>Descrição</p>
+            <p>Este mouse da Logitech oferece alta precisão e conforto, com design ergonômico e botões programáveis para uma experiência superior de uso. Ideal para gamers e profissionais que buscam desempenho rápido e responsivo.</p>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="../menu-principal/script.js"></script>
+</body>
+</html>
