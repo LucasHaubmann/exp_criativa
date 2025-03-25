@@ -110,6 +110,8 @@ h2 {
 }
 
 .produto {
+    display: flex;
+    flex-direction: column;
     padding: 20px;
     background-color: #026773;
     color: white;
@@ -122,7 +124,6 @@ h2 {
     padding: 0px;
     text-align: left;
     width: calc(25% - 20px);
-    height: 450px;
 }
 
 .info-produto{
