@@ -135,7 +135,7 @@ function setupValidation(formId, fields) {
     if (camposInvalidos.length > 0) {
       alert("Por favor, corrija os seguintes campos: " + camposInvalidos.join(", "));
     } else {
-      alert("Cadastro realizado com sucesso!");
+      alert("Sucesso!");
       form.reset();
       fields.forEach((field) => showError(field, ""));
     }
