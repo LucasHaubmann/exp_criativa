@@ -67,6 +67,9 @@ h2 {
     align-items: center;
     overflow: hidden;
     position: relative;
+    padding-left: 40px;
+    padding-right: 40px;
+    margin-bottom: 20px;
 }
 
 .carousel-content {
@@ -221,7 +224,7 @@ h2 {
 
 .botao-vendedores{
     height: 70px;
-    background: rgba(0, 0, 0, 0.5);
+    background-color: #3CA6A6;
     color: white;
     border: none;
     padding: 10px;
@@ -332,4 +335,8 @@ a {
     .botao-vendedores {
         display: block; /* Show navigation buttons */
     }
+}
+
+.divider{
+    width: 12px;
 }
