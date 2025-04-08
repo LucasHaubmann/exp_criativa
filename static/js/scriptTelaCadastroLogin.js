@@ -84,6 +84,19 @@ function aplicarMascaraData(input) {
   });
 }
 
+// === TOAST (popup de erro bonito) ===
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
 function setupValidation(formId, fields) {
   const form = document.getElementById(formId);
   if (!form) return;
@@ -119,21 +132,22 @@ function setupValidation(formId, fields) {
     });
   });
 
-  // Alerta no submit
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const camposInvalidos = [];
+
     fields.forEach((field) => {
       const inputEl = form.querySelector(`[name="${field}"]`);
       const value = inputEl.value.trim();
       const error = validateField(field, value);
       if (!value || error) {
+        showError(field, error);
         camposInvalidos.push(field);
       }
     });
 
     if (camposInvalidos.length > 0) {
-      alert("Por favor, corrija os seguintes campos: " + camposInvalidos.join(", "));
+      showToast("Por favor, corrija os campos destacados.");
     } else {
       const formData = new FormData(form);
       fetch("/cadastro", {
@@ -154,7 +168,7 @@ function setupValidation(formId, fields) {
         })
         .catch((error) => {
           console.error("Erro ao enviar:", error);
-          alert("Erro ao enviar o formulário.");
+          showToast("Erro ao enviar o formulário.");
         });
     }
   });
@@ -168,6 +182,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setupValidation("signup-form", ["nome", "cpf", "dataNascimento", "email", "senha"]);
   setupValidation("login-form", ["loginEmail"]);
+
+  // Mostrar/Ocultar senha
+  document.querySelectorAll(".toggle-password").forEach((icon) => {
+    icon.addEventListener("click", () => {
+      const input = document.getElementById(icon.getAttribute("data-target"));
+      if (!input) return;
+      const isPassword = input.getAttribute("type") === "password";
+      input.setAttribute("type", isPassword ? "text" : "password");
+      icon.classList.toggle("bi-eye-fill");
+      icon.classList.toggle("bi-eye-slash-fill");
+    });
+  });
 });
 
 window.addEventListener("load", () => {
@@ -199,27 +225,5 @@ window.addEventListener("load", () => {
         },
       },
     });
-  } else {
-    const formData = new FormData(form);
-    fetch("/cadastro", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => {
-        if (response.redirected) {
-          window.location.href = response.url;
-        } else {
-          return response.text();
-        }
-      })
-      .then((data) => {
-        console.log("Resposta:", data);
-        form.reset();
-        fields.forEach((field) => showError(field, ""));
-      })
-      .catch((error) => {
-        console.error("Erro ao enviar:", error);
-        alert("Erro ao enviar o formulário.");
-      });
   }
 });
