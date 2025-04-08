@@ -51,17 +51,33 @@ function validateField(name, value) {
     case "loginEmail":
       return regex.email.test(value) ? "" : "Email inválido.";
     case "senha":
-      return regex.senha.test(value) ? "" : "Senha deve ter pelo menos 6 caracteres.";
+    case "senhaLogin":
+      return regex.senha.test(value) ? "" : "Você precisa digitar algo.";
     default:
       return "";
   }
 }
 
-function showError(field, message) {
+function showError(field, message, isFocused = false) {
   const el = document.getElementById("error-" + field);
+  const input = document.querySelector(`[name="${field}"]`);
+
+  if (input) {
+    if (message) {
+      input.classList.add("erro-campo");
+    } else {
+      input.classList.remove("erro-campo");
+    }
+  }
+
   if (el) {
-    el.textContent = message;
-    el.style.display = message ? "block" : "none";
+    if (isFocused && message) {
+      el.textContent = message;
+      el.style.display = "block";
+    } else {
+      el.textContent = "";
+      el.style.display = "none";
+    }
   }
 }
 
@@ -84,7 +100,6 @@ function aplicarMascaraData(input) {
   });
 }
 
-// === TOAST (popup de erro bonito) ===
 function showToast(message) {
   const toast = document.getElementById("toast");
   if (!toast) return;
@@ -102,6 +117,7 @@ function setupValidation(formId, fields) {
   if (!form) return;
 
   let focusedField = null;
+  const camposJaFocados = new Set();
 
   fields.forEach((field) => {
     const input = form.querySelector(`[name="${field}"]`);
@@ -109,26 +125,26 @@ function setupValidation(formId, fields) {
 
     input.addEventListener("focus", () => {
       focusedField = field;
+      const value = input.value.trim();
+      const error = validateField(field, value);
+
+      if (!camposJaFocados.has(field)) {
+        showError(field, error, true);
+        camposJaFocados.add(field);
+      } else {
+        showError(field, "", false);
+      }
     });
 
     input.addEventListener("blur", () => {
       focusedField = null;
-      showError(field, "");
+      showError(field, "", false);
     });
 
     input.addEventListener("input", () => {
       const value = input.value.trim();
-      if (!value) {
-        showError(field, "");
-        return;
-      }
-
-      if (focusedField === field) {
-        const error = validateField(field, value);
-        showError(field, error);
-      } else {
-        showError(field, "");
-      }
+      const error = validateField(field, value);
+      showError(field, error, focusedField === field);
     });
   });
 
@@ -141,36 +157,39 @@ function setupValidation(formId, fields) {
       const value = inputEl.value.trim();
       const error = validateField(field, value);
       if (!value || error) {
-        showError(field, error);
+        showError(field, error, false);
         camposInvalidos.push(field);
+      } else {
+        showError(field, "", false);
       }
     });
 
     if (camposInvalidos.length > 0) {
       showToast("Por favor, corrija os campos destacados.");
-    } else {
-      const formData = new FormData(form);
-      fetch("/cadastro", {
-        method: "POST",
-        body: formData,
-      })
-        .then((response) => {
-          if (response.redirected) {
-            window.location.href = response.url;
-          } else {
-            return response.text();
-          }
-        })
-        .then((data) => {
-          console.log("Resposta:", data);
-          form.reset();
-          fields.forEach((field) => showError(field, ""));
-        })
-        .catch((error) => {
-          console.error("Erro ao enviar:", error);
-          showToast("Erro ao enviar o formulário.");
-        });
+      return;
     }
+
+    const formData = new FormData(form);
+    fetch("/cadastro", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        if (response.redirected) {
+          window.location.href = response.url;
+        } else {
+          return response.text();
+        }
+      })
+      .then((data) => {
+        console.log("Resposta:", data);
+        form.reset();
+        fields.forEach((field) => showError(field, "", false));
+      })
+      .catch((error) => {
+        console.error("Erro ao enviar:", error);
+        showToast("Erro ao enviar o formulário.");
+      });
   });
 }
 
@@ -181,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (dataInput) aplicarMascaraData(dataInput);
 
   setupValidation("signup-form", ["nome", "cpf", "dataNascimento", "email", "senha"]);
-  setupValidation("login-form", ["loginEmail"]);
+  setupValidation("login-form", ["loginEmail", "senhaLogin"]);
 
   // Mostrar/Ocultar senha
   document.querySelectorAll(".toggle-password").forEach((icon) => {

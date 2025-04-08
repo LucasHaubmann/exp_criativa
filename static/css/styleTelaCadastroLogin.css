@@ -236,3 +236,16 @@ margin-bottom: 20px;
     transform-origin: center;
   }
 }
+
+input.erro-campo {
+  border: 2px solid #ff4f4f !important;
+}
+
+.error {
+  display: none;
+  color: #ff4f4f;
+  font-size: 12px;
+  margin-top: 4px;
+  text-align: left;
+  width: 80%;
+}
