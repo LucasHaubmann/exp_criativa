@@ -10,8 +10,8 @@ from datetime import date, datetime
 
 app = FastAPI()
 
-# # Configuração de sessão (chave secreta para cookies de sessão)
-# app.add_middleware(SessionMiddleware, secret_key="clinica")
+# Configuração de sessão (chave secreta para cookies de sessão)
+app.add_middleware(SessionMiddleware, secret_key="123456")
 
 # Configuração de arquivos estáticos
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -107,6 +107,7 @@ async def cadastrar_usuario(
             # insere o usuario no banco de dados
             sql = "INSERT INTO usuarios (nome, cpf, dt_Nasc, email, senha) VALUES (%s, %s, %s, %s, %s)"
             cursor.execute(sql, (nome, cpf, dt_nasc_obj, email, senha))
+
             db.commit()
 
             request.session["nao_autenticado"] = True
@@ -118,6 +119,7 @@ async def cadastrar_usuario(
         request.session["nao_autenticado"] = True
         request.session["mensagem_header"] = "Cadastro"
         request.session["mensagem"] = f"Erro ao cadastrar: {str(e)}"
+        print(f"Erro ao cadastrar: {str(e)}")
         return RedirectResponse(url="/", status_code=303)
 
     finally:
