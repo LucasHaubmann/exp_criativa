@@ -16,7 +16,7 @@ CREATE TABLE `usuarios` (
   `cpf` VARCHAR(14) NOT NULL UNIQUE, 
   `dt_Nasc` DATE DEFAULT NULL,
   `email` VARCHAR(50) NOT NULL,
-  `senha` MEDIUMBLOB DEFAULT NULL
+  `senha` INT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 select * from  `usuarios`;
