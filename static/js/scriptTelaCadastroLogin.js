@@ -135,9 +135,27 @@ function setupValidation(formId, fields) {
     if (camposInvalidos.length > 0) {
       alert("Por favor, corrija os seguintes campos: " + camposInvalidos.join(", "));
     } else {
-      alert("Sucesso!");
-      form.reset();
-      fields.forEach((field) => showError(field, ""));
+      const formData = new FormData(form);
+      fetch("/cadastro", {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => {
+          if (response.redirected) {
+            window.location.href = response.url;
+          } else {
+            return response.text();
+          }
+        })
+        .then((data) => {
+          console.log("Resposta:", data);
+          form.reset();
+          fields.forEach((field) => showError(field, ""));
+        })
+        .catch((error) => {
+          console.error("Erro ao enviar:", error);
+          alert("Erro ao enviar o formulário.");
+        });
     }
   });
 }
@@ -182,6 +200,26 @@ window.addEventListener("load", () => {
       },
     });
   } else {
-    console.error("particles.js não carregado.");
+    const formData = new FormData(form);
+    fetch("/cadastro", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        if (response.redirected) {
+          window.location.href = response.url;
+        } else {
+          return response.text();
+        }
+      })
+      .then((data) => {
+        console.log("Resposta:", data);
+        form.reset();
+        fields.forEach((field) => showError(field, ""));
+      })
+      .catch((error) => {
+        console.error("Erro ao enviar:", error);
+        alert("Erro ao enviar o formulário.");
+      });
   }
 });
