@@ -34,43 +34,11 @@ def get_db():
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    # if request.session.get("user_logged_in"):
-    #     return RedirectResponse(url="/medListar", status_code=303)
-
-    # login_error = request.session.pop("login_error", None)
-    # show_login_modal = request.session.pop("show_login_modal", False)
-    # nome_usuario = request.session.get("nome_usuario", None)
-
     return templates.TemplateResponse("index.html", {"request": request})
-
-# @app.post("/login")
-# async def login(
-#     request: Request,
-#     Login: str = Form(...),
-#     Senha: str = Form(...),
-#     db = Depends(get_db)
-# ):
-#     try:
-#         with db.cursor() as cursor:
-#
-#             cursor.execute("SELECT * FROM Usuario WHERE Login = %s AND Senha = MD5(%s)", (Login, Senha))
-#             user = cursor.fetchone()
-#
-#             if user:
-#                 request.session["user_logged_in"] = True
-#                 request.session["nome_usuario"] = user[1]
-#                 return RedirectResponse(url="/medListar", status_code=303)
-#             else:
-#                 request.session["login_error"] = "Usuário ou senha inválidos."
-#                 request.session["show_login_modal"] = True
-#                 return RedirectResponse(url="/", status_code=303)
-#     finally:
-#         db.close()
 
 @app.get("/logout")
 async def logout(request: Request):
     # Encerra a sessão do usuário e retorna à página inicial.
-    # request.session.clear()  # remove todos os dados de sessão
     return RedirectResponse(url="/cadastro", status_code=303)
 
 @app.get("/cadastro", response_class=HTMLResponse)
