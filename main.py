@@ -7,6 +7,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from datetime import date, datetime
+import bcrypt
+import hashlib
 
 app = FastAPI()
 
@@ -23,14 +25,19 @@ templates = Jinja2Templates(directory="templates")
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "1234567",
+    "password": "6540",
     "database": "pointback"
 }
 
 
-# Função para obter conexão com MySQL
+# função para conectar com MySQL
 def get_db():
     return pymysql.connect(**DB_CONFIG)
+
+
+def is_user_logged_in(request: Request) -> bool:
+    return "user_id" in request.session
+
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
@@ -38,11 +45,15 @@ async def index(request: Request):
 
 @app.get("/logout")
 async def logout(request: Request):
-    # Encerra a sessão do usuário e retorna à página inicial.
+    # limpa a sessao
+    request.session.clear()
+    # encerra a sessão e retorna para a pagina inicial
     return RedirectResponse(url="/cadastro", status_code=303)
 
 @app.get("/cadastro", response_class=HTMLResponse)
 async def cadastro(request: Request):
+    if "user_id" in request.session:
+        return RedirectResponse(url="/", status_code=303)
     return templates.TemplateResponse("telaCadastroLogin.html", {"request": request})
 
 @app.post("/cadastro", name="cadastro")
@@ -74,7 +85,10 @@ async def cadastrar_usuario(
 
             # insere o usuario no banco de dados
             sql = "INSERT INTO usuarios (nome, cpf, dt_Nasc, email, senha) VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(sql, (nome, cpf, dt_nasc_obj, email, senha))
+            senha_bytes = senha.encode('utf-8')  # Converte a senha para bytes
+            salt = bcrypt.gensalt()  #gera salt aleatório
+            senha_hash = bcrypt.hashpw(senha_bytes, salt)  # Gera o hash da senha
+            cursor.execute(sql, (nome, cpf, dt_nasc_obj, email, senha_hash))
 
             db.commit()
 
@@ -90,6 +104,31 @@ async def cadastrar_usuario(
         print(f"Erro ao cadastrar: {str(e)}")
         return RedirectResponse(url="/", status_code=303)
 
+    finally:
+        db.close()
+
+
+@app.post("/login")
+async def login(
+    request: Request,
+    loginEmail: str = Form(...),
+    senhaLogin: str = Form(...),
+    db=Depends(get_db)
+):
+    try:
+        with db.cursor() as cursor:
+            # pega a senha em hash no bd
+            cursor.execute("SELECT id, senha FROM usuarios WHERE email = %s", (loginEmail,))
+            result = cursor.fetchone()
+            if result:
+                user_id, senha_hash = result
+                # verifica se a senha fornecida corresponde ao hash armazenado
+                if bcrypt.checkpw(senhaLogin.encode('utf-8'), senha_hash.encode('utf-8')):
+                    # inicia a sessao
+                    request.session["user_id"] = user_id
+                    return RedirectResponse(url="/", status_code=303)
+            # credenciais invalidas
+            return RedirectResponse(url="/cadastro", status_code=303)
     finally:
         db.close()
 
