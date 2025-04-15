@@ -31,8 +31,16 @@
         </div>
         <div class="user-menu" id="user-menu">
             <ul>
+                {% if user %}
+                <li><p>Seus pontos: {{ user.pontos }} </p></li>
+                <li><a href="/meus-pedidos">Meus pedidos</a></li>
+                <li><a href="/favoritos">Lista de desejos</a></li>
                 <li><a href="/inventario">Perfil vendedor</a></li>
                 <li><a href="/logout" id="logout">Sair</a></li>
+                {% else %}
+                <li><a href="/cadastro">Entrar</a></li>
+                <li><a href="/cadastro">Cadastrar</a></li>
+                {% endif %}
             </ul>
         </div>
     </header>

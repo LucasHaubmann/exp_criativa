@@ -39,10 +39,39 @@ def is_user_logged_in(request: Request) -> bool:
     return "user_id" in request.session
 
 
+def get_user_from_session(request: Request):
+    # retorna o usuario se encontrado, com base no user_id fornecido
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return None
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                "SELECT nome, cpf, dt_Nasc, email, pontos FROM usuarios WHERE ID = %s",
+                (user_id,)
+            )
+            row = cursor.fetchone()
+            if row:
+                user = {
+                    "nome": row[0],
+                    "cpf": row[1],
+                    "dt_nasc": row[2],
+                    "email": row[3],
+                    "pontos": row[4]
+                }
+                return user
+    finally:
+        db.close()
+    return None
+
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
+    user = get_user_from_session(request)
+    return templates.TemplateResponse("index.html", {"request": request, "user": user})
 @app.get("/logout")
 async def logout(request: Request):
     # limpa a sessao
