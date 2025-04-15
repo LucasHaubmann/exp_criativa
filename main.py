@@ -25,7 +25,7 @@ templates = Jinja2Templates(directory="templates")
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "6540",
+    "password": "1234567",
     "database": "pointback"
 }
 
