@@ -1,7 +1,7 @@
 import pymysql
 import base64
 from mangum import Mangum
-from fastapi import FastAPI, Request, Form, Depends, UploadFile, File
+from fastapi import FastAPI, Request, Form, Depends, UploadFile, File, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -164,7 +164,6 @@ async def login(
 
 @app.get("/inventario", response_class=HTMLResponse)
 async def inventario(request: Request):
-
     return templates.TemplateResponse("inventario.html", {"request": request})
 
 
@@ -182,5 +181,57 @@ async def reset_session(request: Request):
     request.session.pop("mensagem_header", None)
     request.session.pop("mensagem", None)
     return {"status": "ok"}
+
+@app.get("/perfil", response_class=HTMLResponse)
+async def cadastro(request: Request):
+    if "user_id" in request.session:
+        user = get_user_from_session(request)
+        return templates.TemplateResponse("perfil.html",  {"request": request, "user": user})
+    return RedirectResponse(url="/", status_code=303)
+
+@app.post("/editar_usuario")
+async def editar_usuario(
+    request: Request,
+    nome: str = Form(...),
+    dataNascimento: str = Form(...),
+    email: str = Form(...),
+    db=Depends(get_db)
+):
+    user_id = request.session.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado.")
+
+    try:
+        dt_nasc_obj = datetime.strptime(dataNascimento, "%d/%m/%Y").date()
+    except ValueError:
+        request.session["nao_autenticado"] = True
+        request.session["mensagem_header"] = "Editar Perfil"
+        request.session["mensagem"] = "Erro: Formato de data inválido."
+        return RedirectResponse(url="/", status_code=303)
+
+    try:
+        with db.cursor() as cursor:
+            sql = """
+                UPDATE usuarios
+                SET nome = %s,
+                    dt_Nasc = %s,
+                    email = %s
+                WHERE ID = %s
+            """
+            cursor.execute(sql, (nome, dt_nasc_obj, email, user_id))
+            db.commit()
+
+            request.session["mensagem_header"] = "Editar Perfil"
+            request.session["mensagem"] = "Perfil atualizado com sucesso!"
+            return RedirectResponse(url="/", status_code=303)
+
+    except Exception as e:
+        request.session["mensagem_header"] = "Editar Perfil"
+        request.session["mensagem"] = f"Erro ao atualizar: {str(e)}"
+        print(f"Erro ao atualizar: {str(e)}")
+        return RedirectResponse(url="/", status_code=303)
+
+    finally:
+        db.close()
 
 Mangum(app)
