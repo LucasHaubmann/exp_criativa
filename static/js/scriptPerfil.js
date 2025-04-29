@@ -134,8 +134,6 @@ function aplicarMascaraData(input) {
 }
 
 function setupValidation(formId, fields) {
-  console.log(formId, fields);
-
   const form = document.getElementById(formId);
   if (!form) return;
 

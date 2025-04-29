@@ -21,4 +21,18 @@ CREATE TABLE usuarios (
   tipo VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE pedidos (
+  ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  id_Comprador INT NOT NULL,
+  id_Vendedor INT NOT NULL,
+  id_Produto INT NOT NULL,
+  valor DECIMAL(10, 2) DEFAULT NULL,
+  valor_Pontos INT DEFAULT NULL,
+  dt_Pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (id_comprador) REFERENCES usuarios(ID),
+  FOREIGN KEY (id_vendedor) REFERENCES usuarios(ID),
+  FOREIGN KEY (id_produto) REFERENCES produtos(ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 select * from  `usuarios`;

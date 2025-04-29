@@ -224,8 +224,6 @@ document.addEventListener("DOMContentLoaded", () => {
       tipo: document.getElementById("editUserTipo").value,
     };
 
-    console.log("Salvar usuário:", userData);
-
     editModal.style.display = "none";
   });
 });
