@@ -49,6 +49,11 @@
           <li><a href="/meus-pedidos">Meus pedidos</a></li>
           <li><a href="/favoritos">Lista de desejos</a></li>
           <li><a href="/inventario">Perfil vendedor</a></li>
+
+          {% if user.admin %}
+          <li><a href="/adm/usuarios">Gerenciar usuários</a></li>
+          {% endif %}
+
           <li><a href="/logout" id="logout">Sair</a></li>
           {% else %}
           <li><a href="/cadastro">Entrar</a></li>

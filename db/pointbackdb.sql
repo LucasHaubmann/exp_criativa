@@ -17,7 +17,8 @@ CREATE TABLE usuarios (
   dt_Nasc DATE DEFAULT NULL,
   email VARCHAR(50) NOT NULL,
   senha CHAR(60) DEFAULT NULL,
-  pontos INT DEFAULT 0
+  pontos INT DEFAULT 0,
+  tipo VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 select * from  `usuarios`;

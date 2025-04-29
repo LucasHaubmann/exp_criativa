@@ -49,17 +49,19 @@ def get_user_from_session(request: Request):
     try:
         with db.cursor() as cursor:
             cursor.execute(
-                "SELECT nome, cpf, dt_Nasc, email, pontos FROM usuarios WHERE ID = %s",
+                "SELECT nome, cpf, dt_Nasc, email, pontos, tipo FROM usuarios WHERE ID = %s",
                 (user_id,)
             )
             row = cursor.fetchone()
             if row:
                 user = {
+                    "id": user_id,
                     "nome": row[0],
                     "cpf": row[1],
                     "dt_nasc": row[2],
                     "email": row[3],
-                    "pontos": row[4]
+                    "pontos": row[4],
+                    "admin": row[5] == 'admin'
                 }
                 return user
     finally:
@@ -113,17 +115,22 @@ async def cadastrar_usuario(
                 return RedirectResponse(url="/", status_code=303)
 
             # insere o usuario no banco de dados
-            sql = "INSERT INTO usuarios (nome, cpf, dt_Nasc, email, senha) VALUES (%s, %s, %s, %s, %s)"
+            sql = "INSERT INTO usuarios (nome, cpf, dt_Nasc, email, senha, tipo) VALUES (%s, %s, %s, %s, %s, %s)"
             senha_bytes = senha.encode('utf-8')  # Converte a senha para bytes
             salt = bcrypt.gensalt()  #gera salt aleatório
             senha_hash = bcrypt.hashpw(senha_bytes, salt)  # Gera o hash da senha
-            cursor.execute(sql, (nome, cpf, dt_nasc_obj, email, senha_hash))
+            cursor.execute(sql, (nome, cpf, dt_nasc_obj, email, senha_hash, "usuario"))
 
             db.commit()
 
             request.session["nao_autenticado"] = True
             request.session["mensagem_header"] = "Cadastro"
             request.session["mensagem"] = "Registro cadastrado com sucesso! Você já pode realizar login."
+
+            cursor.execute("SELECT id FROM usuarios WHERE email = %s", (email,))
+            result = cursor.fetchone()
+
+            request.session["user_id"] = result
             return RedirectResponse(url="/", status_code=303)
 
     except Exception as e:
@@ -183,7 +190,7 @@ async def reset_session(request: Request):
     return {"status": "ok"}
 
 @app.get("/perfil", response_class=HTMLResponse)
-async def cadastro(request: Request):
+async def perfil(request: Request):
     if "user_id" in request.session:
         user = get_user_from_session(request)
         return templates.TemplateResponse("perfil.html",  {"request": request, "user": user})
@@ -231,6 +238,103 @@ async def editar_usuario(
         print(f"Erro ao atualizar: {str(e)}")
         return RedirectResponse(url="/", status_code=303)
 
+    finally:
+        db.close()
+
+
+# rotas adm
+@app.get("/adm/usuarios", response_class=HTMLResponse)
+async def adm_usuarios(request: Request, db=Depends(get_db)):
+    if "user_id" in request.session:
+        user = get_user_from_session(request)
+        print(user)
+        if user['admin'] == True:
+            try:
+                with db.cursor() as cursor:
+                    cursor.execute("""
+                        SELECT id, nome, cpf, dt_nasc, email, pontos, tipo
+                        FROM usuarios
+                    """)
+                    result = cursor.fetchall()
+                    usersList = [
+                        {
+                            "id": row[0],
+                            "nome": row[1],
+                            "cpf": row[2],
+                            "dt_nasc": row[3],
+                            "email": row[4],
+                            "pontos": row[5],
+                            "tipo": row[6],
+                        }
+                        for row in result
+                    ]
+
+                return templates.TemplateResponse(
+                    "adm_usuarios.html",
+                    {
+                        "request": request,
+                        "user": user,
+                        "usersList": usersList
+                    }
+                )
+            except Exception as e:
+                print(f"Erro ao buscar usuários: {e}")
+                return RedirectResponse(url="/", status_code=303)
+            finally:
+                db.close()
+
+        return RedirectResponse(url="/", status_code=303)
+    return RedirectResponse(url="/", status_code=303)
+
+@app.post("/adm/editar_usuario")
+async def adm_editar_usuario(
+    id: int = Form(...),
+    nome: str = Form(...),
+    cpf: str = Form(...),
+    dataNascimento: str = Form(...),
+    email: str = Form(...),
+    pontos: int = Form(...),
+    tipo: str = Form(...),
+    db=Depends(get_db)
+):
+    try:
+        dt_nasc_obj = datetime.strptime(dataNascimento, "%d/%m/%Y").date()
+
+        with db.cursor() as cursor:
+            cursor.execute("""
+                UPDATE usuarios
+                SET nome = %s,
+                    cpf = %s,
+                    dt_Nasc = %s,
+                    email = %s,
+                    pontos = %s,
+                    tipo = %s
+                WHERE id = %s
+            """, (nome, cpf, dt_nasc_obj, email, pontos, tipo, id))
+            
+            db.commit()
+        return RedirectResponse(url="/adm/usuarios", status_code=303)
+
+    except Exception as e:
+        print(f"Erro ao editar usuário: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao editar usuário.")
+    finally:
+        db.close()
+
+@app.post("/adm/excluir_usuario")
+async def adm_excluir_usuario(
+    id: int = Form(...),
+    db=Depends(get_db)
+):
+    try:
+        with db.cursor() as cursor:
+            cursor.execute("DELETE FROM usuarios WHERE id = %s", (id,))
+            db.commit()
+        return RedirectResponse(url="/adm/usuarios", status_code=303)
+
+    except Exception as e:
+        print(f"Erro ao excluir usuário: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao excluir usuário.")
     finally:
         db.close()
 

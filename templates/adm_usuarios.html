@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Administração de Usuários</title>
+    <link rel="stylesheet" href="/static/css/adm/styleUsuarios.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="title-wrapper">
+        <h2 class="title">Olá, {{ user.nome }}!</h2>
+      </div>
+      <div class="user-info">
+        <a href="/" class="btn-home">Home</a>
+      </div>
+    </header>
+
+    <div class="dashboard">
+      <h2>Usuários Cadastrados</h2>
+
+      <div class="table-wrapper">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Data de Nascimento</th>
+              <th>Email</th>
+              <th>Pontos</th>
+              <th>Tipo</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in usersList %}
+            <tr>
+              <td>{{ u.id }}</td>
+              <td>{{ u.nome }}</td>
+              <td>{{ u.cpf }}</td>
+              <td>{{ u.dt_nasc.strftime('%d/%m/%Y') if u.dt_nasc else '' }}</td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.pontos }}</td>
+              <td>{{ u.tipo }}</td>
+              <td class="actions">
+                <button class="btn edit-btn" data-userid="{{ u.id }}">
+                  Editar
+                </button>
+                {% if u.id != user.id %}
+                <button class="btn delete-btn" data-userid="{{ u.id }}">
+                  Excluir
+                </button>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="modal" id="editModal">
+      <div class="modal-content">
+        <h3>Editar Usuário</h3>
+        <form id="editUserForm">
+          <input type="hidden" id="editUserId" name="id" />
+
+          <input
+            type="text"
+            id="editUserNome"
+            name="nome"
+            placeholder="Nome"
+            required
+          />
+          <small id="error-nome" class="form-error-message"></small>
+
+          <input
+            type="text"
+            id="editUserCpf"
+            name="cpf"
+            placeholder="CPF"
+            required
+          />
+          <small id="error-cpf" class="form-error-message"></small>
+
+          <input
+            type="text"
+            id="editUserDtNasc"
+            name="dataNascimento"
+            placeholder="Data de Nascimento"
+            required
+          />
+          <small id="error-dataNascimento" class="form-error-message"></small>
+
+          <input
+            type="email"
+            id="editUserEmail"
+            name="email"
+            placeholder="Email"
+            required
+          />
+          <small id="error-email" class="form-error-message"></small>
+
+          <input
+            type="number"
+            id="editUserPontos"
+            name="pontos"
+            placeholder="Pontos"
+            required
+          />
+          <input
+            type="text"
+            id="editUserTipo"
+            name="tipo"
+            placeholder="Tipo"
+            required
+          />
+
+          <button type="submit" class="btn">Salvar</button>
+          <button type="button" class="btn cancel-btn" id="closeEditModal">
+            Cancelar
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="deleteModal">
+      <div class="modal-content">
+        <h3>Confirmar Exclusão</h3>
+        <p>Tem certeza que deseja excluir este usuário?</p>
+        <button class="btn delete-btn" id="confirmDelete">Excluir</button>
+        <button class="btn cancel-btn" id="closeDeleteModal">Cancelar</button>
+      </div>
+    </div>
+
+    <script src="/static/js/adm/scriptUsuarios.js"></script>
+  </body>
+</html>
