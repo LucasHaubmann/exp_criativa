@@ -280,7 +280,7 @@ a {
 
 .produto-container {
   height: 80vh;
-  width: 58vw;
+  width: 56vw;
   background-color: #026773;
   margin: 50px auto 0px auto;
   border-radius: 15px;
@@ -304,10 +304,10 @@ a {
   font-size: 28px;
 }
 
-.acoes-produto {
-  width: 300px;
-  height: 90px;
-  font-weight: 800;
+.marca-produto-tela-produto {
+  font-weight: 700;
+  color: rgb(255, 0, 0);
+  font-size: 16px;
 }
 
 .produto-imagem {
@@ -330,7 +330,7 @@ a {
 }
 
 .acoes-produto {
-  display: flex;
+  font-weight: 800;
   flex-direction: column;
   align-items: center;
 }
@@ -341,7 +341,9 @@ a {
   outline: none;
   border: 10px solid #024959;
   margin: 5px;
-  width: 100%;
+  width: 75%;
+  font-size: 20px;
+  border-radius: 4px;
 }
 
 .acoes-produto button:hover {
@@ -352,14 +354,78 @@ a {
 .info-produto-tela-produto {
   display: flex;
   flex: 1;
+  padding: 0px 20px 0px 20px;
   flex-direction: column;
-  padding: 20px;
-  align-items: center;
+  margin-left: 1vw;
+}
+
+.preco-reais-pontos {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+}
+
+.preco-reais-pontos img {
+  width: 25px;  
+  height: 25px;
+  margin-right: 8px; 
+  vertical-align: middle;
+}
+
+.preco-produto-tela-produto-container{
+  display: flex;
+  flex-direction: column;
+  margin-top: 39px;
+  margin-bottom: 40px;
+}
+
+.quantidade-text {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: white;
+}
+
+.quantidade-select {
+  width: 120px;
+  height: 30px;
+  color: rgb(92, 92, 92);
+  border-radius: 4px;
 }
 
 .descricao-completa {
   color: white;
   border: 10px solid #026773;
+  background-color: #026773;
+}
+
+
+.header-menu{
+  display: flex;
+  justify-content: center;
+  background-color: #026773;
+}
+
+.header-menu-list {
+  display: flex;
+  flex-direction: row;
+  list-style-type: none;
+  color: white;
+}
+
+.header-menu-list li{
+  border: 10px solid #026773;
+  padding: 0 20px;
+  transition: color 0.2s;
+}
+
+.header-menu-list li:hover{
+  color: rgb(255, 0, 0);
+}
+
+@media (max-width: 1150px) {
+  .header-menu{
+    display: none;
+  }
 }
 
 @media (max-width: 500px) {
@@ -400,11 +466,23 @@ a {
   }
 
   .acoes-produto button {
-    width: 50%;
+    width: 66%;
+  }
+
+  .preco-produto-tela-produto-container {
+    margin-bottom: 0px;
+  }
+
+  .acoes-produto {
+    display: flex;
   }
 
   .produto-imagem {
     align-items: center;
+  }
+
+  .preco-produto-tela-produto{
+    font-size: 25px;
   }
 }
 

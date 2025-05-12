@@ -25,7 +25,7 @@ templates = Jinja2Templates(directory="templates")
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "1234567",
+    "password": "6540",
     "database": "pointback"
 }
 
@@ -49,7 +49,7 @@ def get_user_from_session(request: Request):
     try:
         with db.cursor() as cursor:
             cursor.execute(
-                "SELECT nome, cpf, dt_Nasc, email, pontos, tipo FROM usuarios WHERE ID = %s",
+                "SELECT nome, cpf, dt_Nasc, email, pontos, tipo FROM usuario WHERE ID = %s",
                 (user_id,)
             )
             row = cursor.fetchone()
@@ -83,7 +83,8 @@ async def logout(request: Request):
 
 @app.get("/cadastro", response_class=HTMLResponse)
 async def cadastro(request: Request):
-    if "user_id" in request.session:
+    print(request.session)
+    if request.session.get("user_id"):
         return RedirectResponse(url="/", status_code=303)
     return templates.TemplateResponse("telaCadastroLogin.html", {"request": request})
 
@@ -107,7 +108,7 @@ async def cadastrar_usuario(
     try:
         with db.cursor() as cursor:
             #verifica se ja existe conta com mesmo cpf
-            cursor.execute("SELECT ID FROM usuarios WHERE cpf = %s", (cpf,))
+            cursor.execute("SELECT ID FROM usuario WHERE cpf = %s", (cpf,))
             if cursor.fetchone():
                 request.session["nao_autenticado"] = True
                 request.session["mensagem_header"] = "Cadastro"
@@ -115,7 +116,7 @@ async def cadastrar_usuario(
                 return RedirectResponse(url="/", status_code=303)
 
             # insere o usuario no banco de dados
-            sql = "INSERT INTO usuarios (nome, cpf, dt_Nasc, email, senha, tipo) VALUES (%s, %s, %s, %s, %s, %s)"
+            sql = "INSERT INTO usuario (nome, cpf, dt_Nasc, email, senha, tipo) VALUES (%s, %s, %s, %s, %s, %s)"
             senha_bytes = senha.encode('utf-8')  # Converte a senha para bytes
             salt = bcrypt.gensalt()  #gera salt aleatório
             senha_hash = bcrypt.hashpw(senha_bytes, salt)  # Gera o hash da senha
@@ -127,7 +128,7 @@ async def cadastrar_usuario(
             request.session["mensagem_header"] = "Cadastro"
             request.session["mensagem"] = "Registro cadastrado com sucesso! Você já pode realizar login."
 
-            cursor.execute("SELECT id FROM usuarios WHERE email = %s", (email,))
+            cursor.execute("SELECT id FROM usuario WHERE email = %s", (email,))
             result = cursor.fetchone()
 
             request.session["user_id"] = result
@@ -154,7 +155,7 @@ async def login(
     try:
         with db.cursor() as cursor:
             # pega a senha em hash no bd
-            cursor.execute("SELECT id, senha FROM usuarios WHERE email = %s", (loginEmail,))
+            cursor.execute("SELECT id, senha FROM usuario WHERE email = %s", (loginEmail,))
             result = cursor.fetchone()
             if result:
                 user_id, senha_hash = result
@@ -181,7 +182,8 @@ async def cadastro_produto(request: Request):
 
 @app.get("/tela_produto", response_class=HTMLResponse)
 async def tela_produto(request: Request):
-    return templates.TemplateResponse("tela_produto.html", {"request": request})
+    user = get_user_from_session(request)
+    return templates.TemplateResponse("tela_produto.html", {"request": request, "user": user})
 
 @app.post("/reset_session")
 async def reset_session(request: Request):
@@ -219,7 +221,7 @@ async def editar_usuario(
     try:
         with db.cursor() as cursor:
             sql = """
-                UPDATE usuarios
+                UPDATE usuario
                 SET nome = %s,
                     dt_Nasc = %s,
                     email = %s
@@ -253,7 +255,7 @@ async def adm_usuarios(request: Request, db=Depends(get_db)):
                 with db.cursor() as cursor:
                     cursor.execute("""
                         SELECT id, nome, cpf, dt_nasc, email, pontos, tipo
-                        FROM usuarios
+                        FROM usuario
                     """)
                     result = cursor.fetchall()
                     usersList = [
@@ -302,7 +304,7 @@ async def adm_editar_usuario(
 
         with db.cursor() as cursor:
             cursor.execute("""
-                UPDATE usuarios
+                UPDATE usuario
                 SET nome = %s,
                     cpf = %s,
                     dt_Nasc = %s,
@@ -328,7 +330,7 @@ async def adm_excluir_usuario(
 ):
     try:
         with db.cursor() as cursor:
-            cursor.execute("DELETE FROM usuarios WHERE id = %s", (id,))
+            cursor.execute("DELETE FROM usuario WHERE id = %s", (id,))
             db.commit()
         return RedirectResponse(url="/adm/usuarios", status_code=303)
 
