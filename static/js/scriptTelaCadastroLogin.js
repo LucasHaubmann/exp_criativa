@@ -40,6 +40,7 @@ function validarDataNascimento(dataStr) {
 }
 
 function validateField(name, value) {
+
   switch (name) {
     case "nome":
       return regex.nome.test(value) ? "" : "Nome inválido.";
@@ -52,18 +53,27 @@ function validateField(name, value) {
       return regex.email.test(value) ? "" : "Email inválido.";
     case "senha":
     case "senhaLogin":
-      return regex.senha.test(value) ? "" : "Você precisa digitar algo.";
+      return regex.senha.test(value) ? "" : "Senha deve ter no mínimo 6 caractéres.";
+    case "confirmPassword":
+      const original = document.getElementById("senhaCadastro").value.trim();
+      if (value.length == 0){
+        return " ";
+      }
+      return value === original ? "" : "As senhas não coincidem.";
     default:
       return "";
   }
 }
 
-function showError(field, message, isFocused = false) {
+function showError(field, message, isFocused = false, forceShow = false) {
   const el = document.getElementById("error-" + field);
   const input = document.querySelector(`[name="${field}"]`);
+  const hasValue = input && input.value.trim().length > 0;
+
+  const deveMostrarErro = forceShow || hasValue;
 
   if (input) {
-    if (message) {
+    if (message && deveMostrarErro) {
       input.classList.add("erro-campo");
     } else {
       input.classList.remove("erro-campo");
@@ -71,7 +81,7 @@ function showError(field, message, isFocused = false) {
   }
 
   if (el) {
-    if (isFocused && message) {
+    if (isFocused && message && deveMostrarErro) {
       el.textContent = message;
       el.style.display = "block";
     } else {
@@ -128,17 +138,17 @@ function setupValidation(formId, fields) {
       const value = input.value.trim();
       const error = validateField(field, value);
 
-      if (!camposJaFocados.has(field)) {
-        showError(field, error, true);
-        camposJaFocados.add(field);
-      } else {
-        showError(field, "", false);
-      }
+      showError(field, error, true);
+
     });
 
     input.addEventListener("blur", () => {
       focusedField = null;
-      showError(field, "", false);
+      const value = input.value.trim();
+      const error = validateField(field, value);
+    
+      // Mantém a borda vermelha se ainda estiver inválido
+      showError(field, error, false);
     });
 
     input.addEventListener("input", () => {
@@ -155,9 +165,9 @@ function setupValidation(formId, fields) {
     fields.forEach((field) => {
       const inputEl = form.querySelector(`[name="${field}"]`);
       const value = inputEl.value.trim();
-      const error = validateField(field, value);
+      const error = validateField(field, value, true); // <- força exigir preenchimento
       if (!value || error) {
-        showError(field, error, false);
+        showError(field, error, false, true); 
         camposInvalidos.push(field);
       } else {
         showError(field, "", false);
@@ -190,16 +200,18 @@ function setupValidation(formId, fields) {
         console.error("Erro ao enviar:", error);
         showToast("Erro ao enviar o formulário.");
       });
+
   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const cpfInput = document.querySelector("input[name='cpf']");
   const dataInput = document.querySelector("input[name='dataNascimento']");
+
   if (cpfInput) aplicarMascaraCPF(cpfInput);
   if (dataInput) aplicarMascaraData(dataInput);
 
-  setupValidation("signup-form", ["nome", "cpf", "dataNascimento", "email", "senha"]);
+  setupValidation("signup-form", ["nome", "cpf", "dataNascimento", "email", "senha", "confirmPassword"]);
   setupValidation("login-form", ["loginEmail", "senhaLogin"]);
 
   // Mostrar/Ocultar senha
@@ -213,6 +225,15 @@ document.addEventListener("DOMContentLoaded", () => {
       icon.classList.toggle("bi-eye-slash-fill");
     });
   });
+
+    // === validação de Confirmar Senha ===
+    const confirmInput = document.getElementById("confirmPassword");
+    if (confirmInput) {
+      confirmInput.addEventListener("input", (e) => {
+        const msg = validateField("confirmPassword", e.target.value.trim());
+        showError("confirmPassword", msg, confirmInput === document.activeElement);
+      });
+    }
 });
 
 window.addEventListener("load", () => {

@@ -21,21 +21,15 @@
     />
   </head>
   <body class="mobile-style">
+    <div id="toast" class="toast">Mensagem aqui</div>
     <div id="particles-js"></div>
 
     <div class="main">
-      <div id="toast" class="toast">Mensagem aqui</div>
       <input type="checkbox" id="chk" aria-hidden="true" />
 
       <div class="signup">
         <form id="signup-form" action="/cadastro" method="POST">
           <label for="chk" aria-hidden="true">Cadastre-se</label>
-
-          <div class="social-container">
-            <a href="#" class="social"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="social"><i class="bi bi-google"></i></a>
-            <a href="#" class="social"><i class="bi bi-linkedin"></i></a>
-          </div>
 
           <div class="form-group">
             <input type="text" name="nome" placeholder="Nome" />
@@ -84,6 +78,30 @@
             <span class="error" id="error-senha"></span>
           </div>
 
+          <!-- Confirmar Senha -->
+          <div class="form-group">
+            <div style="position: relative; width: 80%;">
+              <input
+                type="password"
+                name="confirmPassword"
+                id="confirmPassword"
+                placeholder="Confirmar Senha"
+                style="width: 100%;"
+              />
+              <i
+                class="bi bi-eye-fill toggle-password"
+                data-target="confirmPassword"
+                style="
+                  position: absolute;
+                  right: 10px;
+                  top: 10px;
+                  cursor: pointer;
+                "
+              ></i>
+            </div>
+            <span class="error" id="error-confirmPassword"></span>
+          </div>
+
           <button type="submit">Criar conta</button>
         </form>
       </div>
@@ -91,12 +109,6 @@
       <div class="login">
         <form id="signup-form" action="/login" method="POST">
           <label for="chk" aria-hidden="true" class="title">Login</label>
-
-          <div class="social-container">
-            <a href="#" class="social"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="social"><i class="bi bi-google"></i></a>
-            <a href="#" class="social"><i class="bi bi-linkedin"></i></a>
-          </div>
 
           <div class="form-group">
             <input type="email" name="loginEmail" placeholder="Email" />
