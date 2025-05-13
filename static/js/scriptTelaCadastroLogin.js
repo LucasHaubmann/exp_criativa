@@ -49,10 +49,8 @@ function validateField(name, value) {
     case "dataNascimento":
       return validarDataNascimento(value);
     case "email":
-    case "loginEmail":
       return regex.email.test(value) ? "" : "Email inválido.";
     case "senha":
-    case "senhaLogin":
       return regex.senha.test(value) ? "" : "Senha deve ter no mínimo 6 caractéres.";
     case "confirmPassword":
       const original = document.getElementById("senhaCadastro").value.trim();
@@ -60,6 +58,8 @@ function validateField(name, value) {
         return " ";
       }
       return value === original ? "" : "As senhas não coincidem.";
+    case "loginEmail":
+        return regex.email.test(value) ? "" : "Email inválido.";
     default:
       return "";
   }
@@ -122,12 +122,8 @@ function showToast(message) {
   }, 3000);
 }
 
-function setupValidation(formId, fields) {
-  const form = document.getElementById(formId);
-  if (!form) return;
-
+function setupValidationFormObject(form, fields) {
   let focusedField = null;
-  const camposJaFocados = new Set();
 
   fields.forEach((field) => {
     const input = form.querySelector(`[name="${field}"]`);
@@ -137,17 +133,13 @@ function setupValidation(formId, fields) {
       focusedField = field;
       const value = input.value.trim();
       const error = validateField(field, value);
-
       showError(field, error, true);
-
     });
 
     input.addEventListener("blur", () => {
       focusedField = null;
       const value = input.value.trim();
       const error = validateField(field, value);
-    
-      // Mantém a borda vermelha se ainda estiver inválido
       showError(field, error, false);
     });
 
@@ -165,9 +157,9 @@ function setupValidation(formId, fields) {
     fields.forEach((field) => {
       const inputEl = form.querySelector(`[name="${field}"]`);
       const value = inputEl.value.trim();
-      const error = validateField(field, value, true); // <- força exigir preenchimento
+      const error = validateField(field, value, true);
       if (!value || error) {
-        showError(field, error, false, true); 
+        showError(field, error, false, true);
         camposInvalidos.push(field);
       } else {
         showError(field, "", false);
@@ -179,16 +171,21 @@ function setupValidation(formId, fields) {
       return;
     }
 
+    // Envio automático após validação
     const formData = new FormData(form);
-    fetch("/cadastro", {
+    fetch(form.action, {
       method: "POST",
       body: formData,
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.redirected) {
           window.location.href = response.url;
+        } else if (response.status === 303) {
+          showError("senhaLogin", "Email ou senha incorretos.", true, true);
+          return;
         } else {
-          return response.text();
+          const data = await response.text();
+          console.log("Resposta:", data);
         }
       })
       .then((data) => {
@@ -200,7 +197,6 @@ function setupValidation(formId, fields) {
         console.error("Erro ao enviar:", error);
         showToast("Erro ao enviar o formulário.");
       });
-
   });
 }
 
@@ -211,8 +207,15 @@ document.addEventListener("DOMContentLoaded", () => {
   if (cpfInput) aplicarMascaraCPF(cpfInput);
   if (dataInput) aplicarMascaraData(dataInput);
 
-  setupValidation("signup-form", ["nome", "cpf", "dataNascimento", "email", "senha", "confirmPassword"]);
-  setupValidation("login-form", ["loginEmail", "senhaLogin"]);
+  const allForms = document.querySelectorAll("form#signup-form");
+
+  if (allForms.length === 2) {
+    const formCadastro = allForms[0]; // primeiro formulário da tela
+    const formLogin = allForms[1];    // segundo formulário da tela
+  
+    setupValidationFormObject(formCadastro, ["nome", "cpf", "dataNascimento", "email", "senha", "confirmPassword"]);
+    setupValidationFormObject(formLogin, ["loginEmail", "senhaLogin"], true);
+  }
 
   // Mostrar/Ocultar senha
   document.querySelectorAll(".toggle-password").forEach((icon) => {
