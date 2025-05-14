@@ -118,7 +118,13 @@
             width: 24px;
             height: 24px; 
         }
-
+        .img-product-card {
+            height: 150px;              /* altura fixa */
+            object-fit: contain;        /* mantém a proporção da imagem */
+            width: 100%;                /* opcional, ajusta ao contêiner */
+            display: block;
+            margin: 0 auto;             /* centraliza horizontalmente */
+        }
     </style>
 </head>
 <body>
@@ -138,104 +144,20 @@
     </div>
 
     <div class="product-container">
-        <div class="product-card">
-            <img src="../static/imagens/cpu.jpeg" alt="CPU">
-            <div class="product-name">Processador Intel i7</div>
-            <div class="product-price">R$ 500</div>
-            <div class="product-price">5000 Pontos</div>
-            <div class="product-price">
-                <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
-            </div>
-            <button class="view-btn">Ver</button>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Excluir</button>
+    {% for produto in produtos %}
+    <div class="product-card">
+        <img class="img-product-card" src="{{ produto.imagem_url }}" alt="{{ produto.nome }}">
+        <div class="product-name">{{ produto.nome }}</div>
+        <div class="product-price">R$ {{ produto.preco }}</div>
+        <div class="product-price">{{ produto.pontos }} Pontos</div>
+        <div class="product-price">
+            <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
         </div>
-        <div class="product-card">
-            <img src="../static/imagens/gpu.jpeg" alt="GPU">
-            <div class="product-name">Placa de Vídeo RTX 3080</div>
-            <div class="product-price">R$ 1200</div>
-            <div class="product-price">12000 Pontos</div>
-            <div class="product-price">
-                <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
-            </div>
-            <button class="view-btn">Ver</button>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Excluir</button>
-        </div>
-        <div class="product-card">
-            <img src="../static/imagens/memoria.jpeg" alt="Memória RAM">
-            <div class="product-name">Memória RAM 16GB</div>
-            <div class="product-price">R$ 300</div>
-            <div class="product-price">3000 Pontos</div>
-            <div class="product-price">
-                <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
-            </div>
-            <button class="view-btn">Ver</button>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Excluir</button>
-        </div>
-        <div class="product-card">
-            <img src="../static/imagens/ssd.jpeg" alt="SSD">
-            <div class="product-name">SSD 1TB NVMe</div>
-            <div class="product-price">R$ 700</div>
-            <div class="product-price">7000 Pontos</div>
-            <div class="product-price">
-                <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
-            </div>
-            <button class="view-btn">Ver</button>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Excluir</button>
-        </div>
+        <button class="view-btn">Ver</button>
+        <button class="edit-btn">Editar</button>
+        <button class="delete-btn">Excluir</button>
     </div>
-    <div class="product-container">
-        <div class="product-card">
-            <img src="../static/imagens/monitor.jpeg" alt="monitor">
-            <div class="product-name">Monitor 144hz</div>
-            <div class="product-price">R$ 1900</div>
-            <div class="product-price">19000 Pontos</div>
-            <div class="product-price">
-                <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
-            </div>
-            <button class="view-btn">Ver</button>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Excluir</button>
-        </div>
-        <div class="product-card">
-            <img src="../static/imagens/teclado.jpeg" alt="teclado">
-            <div class="product-name">Teclado Mecânico</div>
-            <div class="product-price">R$ 40</div>
-            <div class="product-price">400 Pontos</div>
-            <div class="product-price">
-                <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
-            </div>
-            <button class="view-btn">Ver</button>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Excluir</button>
-        </div>
-        <div class="product-card">
-            <img src="../static/imagens/mouse.jpeg" alt="mouse">
-            <div class="product-name">Mouse Gamer GT Nebula</div>
-            <div class="product-price">R$ 45</div>
-            <div class="product-price">450 Pontos</div>
-            <div class="product-price">
-                <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
-            </div>
-            <button class="view-btn">Ver</button>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Excluir</button>
-        </div>
-        <div class="product-card">
-            <img src="../static/imagens/headset.jpeg" alt="headset">
-            <div class="product-name">Headset Gamer</div>
-            <div class="product-price">R$ 45</div>
-            <div class="product-price">450 Pontos</div>
-            <div class="product-price">
-                <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
-            </div>
-            <button class="view-btn">Ver</button>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Excluir</button>
-        </div>
-    </div>
+    {% endfor %}
+</div>
 </body>
 </html>

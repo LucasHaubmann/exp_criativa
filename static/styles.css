@@ -412,6 +412,10 @@ a {
   color: white;
 }
 
+.icon-sidebar {
+  visibility: hidden;
+}
+
 .header-menu-list li{
   border: 10px solid #026773;
   padding: 0 20px;
@@ -422,9 +426,13 @@ a {
   color: rgb(255, 0, 0);
 }
 
+
 @media (max-width: 1150px) {
   .header-menu{
     display: none;
+  }
+  .icon-sidebar {
+    visibility: visible;
   }
 }
 

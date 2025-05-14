@@ -30,9 +30,9 @@ CREATE TABLE pedido (
   valor_Pontos INT DEFAULT NULL,
   dt_Pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-  FOREIGN KEY (id_comprador) REFERENCES usuarios(ID),
-  FOREIGN KEY (id_vendedor) REFERENCES usuarios(ID),
-  FOREIGN KEY (id_produto) REFERENCES produtos(ID)
+  FOREIGN KEY (id_comprador) REFERENCES usuario(ID),
+  FOREIGN KEY (id_vendedor) REFERENCES usuario(ID),
+  FOREIGN KEY (id_produto) REFERENCES produto(ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 select * from  `usuarios`;

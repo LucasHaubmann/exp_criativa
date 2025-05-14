@@ -2,13 +2,14 @@ import pymysql
 import base64
 from mangum import Mangum
 from fastapi import FastAPI, Request, Form, Depends, UploadFile, File, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from datetime import date, datetime
 import bcrypt
 import hashlib
+
 
 app = FastAPI()
 
@@ -25,7 +26,7 @@ templates = Jinja2Templates(directory="templates")
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "1234567",
+    "password": "6540",
     "database": "pointback"
 }
 
@@ -171,13 +172,89 @@ async def login(
 
 
 @app.get("/inventario", response_class=HTMLResponse)
-async def inventario(request: Request):
-    return templates.TemplateResponse("inventario.html", {"request": request})
+async def inventario(request: Request, db=Depends(get_db)):
+    try:
+        with db.cursor() as cursor:
+            cursor.execute("""
+                SELECT id, modelo, preco, pontos, imagem
+                FROM produto
+            """)
+            result = cursor.fetchall()
+            produtos = [
+                {
+                    "id": row[0],
+                    "nome": row[1],  # modelo -> nome para facilitar no HTML
+                    "preco": row[2],
+                    "pontos": row[3],
+                    "imagem_url": f"/imagem/{row[0]}"  # nova rota para servir imagem
+                }
+                for row in result
+            ]
+
+        return templates.TemplateResponse(
+            "inventario.html",
+            {
+                "request": request,
+                "produtos": produtos
+            }
+        )
+    except Exception as e:
+        print(f"Erro ao buscar produtos: {e}")
+        return RedirectResponse(url="/", status_code=303)
+    finally:
+        db.close()
+
+
+@app.get("/imagem/{produto_id}")
+async def imagem_produto(produto_id: int, db=Depends(get_db)):
+    try:
+        with db.cursor() as cursor:
+            cursor.execute("SELECT imagem FROM produto WHERE id = %s", (produto_id,))
+            result = cursor.fetchone()
+            if result and result[0]:
+                return Response(content=result[0], media_type="image/jpeg")
+            else:
+                return Response(status_code=404)
+    finally:
+        db.close()
+
 
 
 @app.get("/cadastro_produto", response_class=HTMLResponse)
 async def cadastro_produto(request: Request):
     return templates.TemplateResponse("cadastro_produto.html", {"request": request})
+
+@app.post("/cadastro_produto")
+async def post_cadastro_produto(
+    request: Request,
+    categoria: str = Form(...),
+    modelo: str = Form(...),
+    marca: str = Form(...),
+    preco: float = Form(...),
+    pontos: int = Form(...),
+    imagem: UploadFile = File(...),
+    db=Depends(get_db)
+):
+    print("a")
+    try:
+        imagem_bytes = await imagem.read()
+
+        with db.cursor() as cursor:
+            query = """
+                INSERT INTO produto (categoria, modelo, marca, preco, pontos, imagem)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            cursor.execute(query, (categoria, modelo, marca, preco, pontos, imagem_bytes))
+            db.commit()
+
+        return RedirectResponse(url="/inventario", status_code=303)
+
+    except Exception as e:
+        print("Erro ao salvar produto:", e)
+        traceback.print_exc()
+        return RedirectResponse(url="/cadastro_produto", status_code=303)
+    finally:
+        db.close()
 
 
 @app.get("/tela_produto", response_class=HTMLResponse)
