@@ -218,7 +218,9 @@ async def imagem_produto(produto_id: int, db=Depends(get_db)):
     finally:
         db.close()
 
-
+@app.get("/atendimento", response_class=HTMLResponse)
+async def cadastro_produto(request: Request):
+    return templates.TemplateResponse("atendimento.html", {"request": request})
 
 @app.get("/cadastro_produto", response_class=HTMLResponse)
 async def cadastro_produto(request: Request):
@@ -319,6 +321,12 @@ async def editar_usuario(
 
     finally:
         db.close()
+
+
+@app.get("/tela_compra", response_class=HTMLResponse)
+async def tela_compra(request: Request):
+    return templates.TemplateResponse("tela_compra.html", {"request": request})
+
 
 
 # rotas adm
