@@ -1,0 +1,110 @@
+.perfil-container {
+  max-width: 1200px;
+  margin: 80px auto 40px auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.pedidos-section,
+.dados-section {
+  background: #ffffff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+.pedidos-section h2,
+.dados-section h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.pedidos-section p {
+  font-size: 16px;
+  color: #666;
+}
+
+.dados-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.form-group input {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.btn-salvar {
+  align-self: flex-start;
+  background-color: #024959;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-salvar:hover {
+  background-color: #012e40;
+}
+
+.form-error-message {
+  color: #ff4444;
+  font-size: 13px;
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: center;
+  display: block;
+}
+
+#toast {
+  visibility: hidden;
+  min-width: 250px;
+  max-width: 80%;
+  background-color: #ff4f4f;
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px 20px;
+  position: fixed;
+  z-index: 1000;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.4s ease, top 0.4s ease;
+}
+
+#toast.show {
+  visibility: visible;
+  opacity: 1;
+  top: 40px;
+}
+
+input[readonly] {
+  background-color: #f5f5f5;
+  color: #555;
+  cursor: not-allowed;
+}

@@ -1,0 +1,251 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+:root {
+  --cor-1: #F2E3D5;
+  --cor-2: #3CA6A6;
+  --cor-3: #026773;
+  --cor-4: #024959;
+  --cor-5: #012E40;
+}
+
+body.mobile-style {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(157deg, rgba(2,73,89,1) 0%, rgba(2,103,115,1) 28%, rgba(60,166,166,1) 62%);
+}
+
+body.mobile-style .main {
+  width: 350px;
+  height: 600px;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px #00000071;
+  background: linear-gradient(157deg, rgb(4, 127, 141) 9%, rgba(60,161,166,1) 50%, rgba(42,127,145,1) 82%);
+  position: relative;
+}
+
+body.mobile-style #chk {
+  display: none;
+}
+
+body.mobile-style .signup {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(157deg, rgb(4, 127, 141) 9%, rgba(60,161,166,1) 50%, rgba(42,127,145,1) 82%);
+}
+
+body.mobile-style .login {
+  height: 100%;
+  background: #ffffff;
+  border-radius: 60% / 10%;
+  transform: translateY(-100px);
+  transition: 0.8s ease-in-out;
+}
+
+body.mobile-style #chk:checked ~ .login {
+  transform: translateY(-565px);
+}
+
+body.mobile-style label {
+  display: flex;
+  justify-content: center;
+  color: #fff;
+  font-size: 2.5em;
+  font-weight: bold;
+  margin: 20px 0 25px;
+  cursor: pointer;
+  transition: 0.5s ease-in-out;
+}
+
+body.mobile-style .login label {
+  color: var(--cor-5);
+  transform: scale(0.5);
+}
+
+body.mobile-style #chk:checked ~ .login label {
+  transform: scale(1);
+}
+
+body.mobile-style #chk:checked ~ .signup label {
+  transform: scale(0.6);
+}
+
+body.mobile-style input {
+  width: 80%;
+  height: 40px;
+  padding: 2px 4px;
+  margin: 0 auto;
+  background: #e0dede;
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+body.mobile-style input:focus {
+  border: 2.5px solid black;
+}
+
+body.mobile-style .form-group {
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body.mobile-style .error {
+  width: 80%;
+  font-size: 12px;
+  color: red;
+  text-align: center;
+  padding-top: 3px;
+  padding-bottom: -3px;
+  line-height: 1;
+}
+
+body.mobile-style button {
+  width: 60%;
+  height: 35px;
+  margin: 5px auto 5px;
+  display: block;
+  color: #fff;
+  background: var(--cor-3);
+  font-size: 1em;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease-in;
+}
+
+body.mobile-style button:hover {
+  background: var(--cor-4);
+}
+
+body.mobile-style .login button {
+  margin-top: 20px;
+}
+
+body.mobile-style .title{
+	margin-bottom: 50px;
+}
+body.mobile-style .forgot-password {
+  width: 80%;
+  margin: 20px auto 8px;
+  font-size: 14px;
+  text-align: left;
+  color: var(--cor-5);
+  text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  display: block;
+  transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+body.mobile-style .forgot-password:active {
+  color: var(--cor-2);
+}
+
+#particles-js {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -10;
+  width: 100%;
+  height: 100%;
+}
+
+.social-container {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.social-container a {
+  border: 1px solid #DDDDDD;
+  background-color: white;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 35px;
+  width: 35px;
+  color: black; 
+  text-decoration: none;
+}
+
+.login .social-container  {
+margin-bottom: 20px;
+}
+
+#particles-js {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  top: 0;
+  left: 0;
+}
+
+.form-error-message {
+  color: #ff4444;
+  font-size: 13px;
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: center;
+  display: block;
+}
+
+/* === TOAST (popup flutuante de erro) === */
+#toast {
+  visibility: hidden;
+  min-width: 250px;
+  max-width: 80%;
+  background-color: #ff4f4f;
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px 20px;
+  position: fixed;
+  z-index: 1000;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.4s ease, top 0.4s ease;
+}
+
+#toast.show {
+  visibility: visible;
+  opacity: 1;
+  top: 5px;
+}
+
+
+/* Media Query para zoom em telas maiores */
+@media screen and (min-width: 480px) {
+  .main {
+    transform: scale(1.2);
+    transform-origin: center;
+  }
+}
+
+input.erro-campo {
+  border: 2px solid #ff4f4f !important;
+}
+
+.error {
+  display: none;
+  color: #ff4f4f;
+  font-size: 12px;
+  margin-top: 4px;
+  text-align: left;
+  width: 80%;
+}

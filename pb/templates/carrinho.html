@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produto - Mouse Logitech</title>
+    <link rel="stylesheet" href="../static/styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="../static/imagens/pb icon.png" type="image/x-icon">
+</head>
+<body>
+    <div>
+      <nav class="sidebar" id="sidebar">
+        <button class="close-btn" id="close-btn">&times;</button>
+        <ul>
+          <li><a href="/promocoes">PROMOÇÕES</a></li>
+          <li><a href="/hardware">HARDWARE</a></li>
+          <li><a href="/notebooks">NOTEBOOKS</a></li>
+          <li><a href="/monitores">MONITORES</a></li>
+          <li><a href="/monteseupc">MONTE SEU PC</a></li>
+          <li><a href="/atendimento">ATENDIMENTO</a></li>
+        </ul>
+      </nav>
+
+        <header class="header">
+        <div class="icon-wrapper">
+          <i data-lucide="menu" id="menu-btn" class="custom-icon"></i>
+        </div>
+        <img src="../static/imagens/Point_Back_LogoAzul.png" alt="" />
+        <div class="icon-wrapper user-icon">
+          {% if user %}
+          <div class="user-info">
+            <span class="user-name">{{user.nome}}</span>
+            <span class="user-name">{{user.pontos}} Pontos</span>
+          </div>
+          {% endif %}
+          <i data-lucide="user-circle" class="custom-icon"></i>
+        </div>
+        <div class="user-menu" id="user-menu">
+          <ul>
+            {% if user %}
+            <li><p>Seus pontos: {{ user.pontos }}</p></li>
+            <li><a href="/perfil">Meu perfil</a></li>
+            <li><a href="/meus-pedidos">Meus pedidos</a></li>
+            <li><a href="/favoritos">Lista de desejos</a></li>
+            <li><a href="/inventario">Perfil vendedor</a></li>
+
+            {% if user.admin %}
+            <li><a href="/adm/usuarios">Gerenciar usuários</a></li>
+            {% endif %}
+
+            <li><a href="/logout" id="logout">Sair</a></li>
+            {% else %}
+            <li><a href="/cadastro">Entrar</a></li>
+            <li><a href="/cadastro">Cadastrar</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </header>
+      <div class="header-menu">
+        <ul class="header-menu-list">
+          <li><a href="/promocoes">PROMOÇÕES</a></li>
+          <li><a href="/hardware">HARDWARE</a></li>
+          <li><a href="/notebooks">NOTEBOOKS</a></li>
+          <li><a href="/monitores">MONITORES</a></li>
+          <li><a href="/monteseupc">MONTE SEU PC</a></li>
+          <li><a href="/atendimento">ATENDIMENTO</a></li>
+        </ul>
+      </div>
+      </div>
+
+    <script src="/static/js/script.js"></script>
+
+    <div class="produtos-container">
+    {% for produto in produtos %}    
+    <div class="produto-card">
+    <img src="{{ produto.imagem }}" alt="{{ produto.modelo }}" class="produto-imagem" />
+    <div class="produto-info">
+      <h2 class="produto-nome">{{ produto.Modelo }}</h2>
+      <p class="produto-valor">Valor: R$ {{ "%.2f"|format(produto.valor) }}</p>
+      <p class="produto-pontos">{{ produto.pontos }} Pontos</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+
+
+</body>
+</html>
