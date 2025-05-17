@@ -4,10 +4,12 @@ USE pointback;
 
 CREATE TABLE produto (
   ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  Modelo VARCHAR(100) NOT NULL,
-  Marca VARCHAR(100) DEFAULT NULL,  
-  pontos INT DEFAULT NULL,           
-  valor DECIMAL(10, 2) DEFAULT NULL  
+  categoria VARCHAR(100) NOT NULL,
+  modelo VARCHAR(100) NOT NULL,
+  marca VARCHAR(100) DEFAULT NULL,
+  pontos INT DEFAULT NULL,
+  preco DECIMAL(10, 2) DEFAULT NULL,
+  imagem LONGBLOB
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE usuario (
@@ -35,4 +37,5 @@ CREATE TABLE pedido (
   FOREIGN KEY (id_produto) REFERENCES produto(ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-select * from  `usuarios`;
+select * from  `usuario`;	
+select * from  `produto`;
