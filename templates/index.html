@@ -110,81 +110,17 @@
         <section class="produtos-lista">
           <h2>Produtos em destaque</h2>
           <div class="produtos">
-            <div class="produto" onclick="redirectTo('/tela_produto')">
-              <img src="../static/imagens/mouse-logitech.jpg" alt="" />
+            {% for produto in produtos %}
+            <div class="produto" onclick="redirectTo('/tela_produto/{{ produto.id }}')">
+              <img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}" />
               <div class="info-produto">
-                <span class="nome-produto">Mouse</span>
-                <span class="descricao-produto"
-                  >Mouse mega bom e barato pra comprar</span
-                >
-                <span class="preco-produto">R$ 100,00</span>
+                <span class="nome-produto">{{ produto.nome }}</span>
+                <span class="descricao-produto">{{ produto.descricao }}</span>
+                <span class="preco-produto">R$ {{ produto.preco }}</span>
+                <span class="preco-produto">{{ produto.pontos }} pontos</span>
               </div>
             </div>
-            <div class="produto">
-              <img src="../static/imagens/teclado.jpg" alt="" />
-              <div class="info-produto">
-                <span class="nome-produto">Teclado</span>
-                <span class="descricao-produto"
-                  >Teclados 60% perfeito para quem busca mobilidade</span
-                >
-                <span class="preco-produto">R$ 200,00</span>
-                <span class="preco-produto">2000 pontos</span>
-              </div>
-            </div>
-            <div class="produto">
-              <img src="../static/imagens/monitor.png" alt="" />
-              <div class="info-produto">
-                <span class="nome-produto">Monitor</span>
-                <span class="descricao-produto">Monitor gamer 144hz</span>
-                <span class="preco-produto">R$ 750,00</span>
-                <span class="preco-produto">7500 pontos</span>
-              </div>
-            </div>
-            <div class="produto">
-              <img src="../static/imagens/monitor.png" alt="" />
-              <div class="info-produto">
-                <span class="nome-produto">Monitor</span>
-                <span class="descricao-produto">Monitor gamer 144hz</span>
-                <span class="preco-produto">R$ 750,00</span>
-                <span class="preco-produto">7500 pontos</span>
-              </div>
-            </div>
-            <div class="produto">
-              <img src="../static/imagens/monitor.png" alt="" />
-              <div class="info-produto">
-                <span class="nome-produto">Monitor</span>
-                <span class="descricao-produto">Monitor gamer 144hz</span>
-                <span class="preco-produto">R$ 750,00</span>
-                <span class="preco-produto">7500 pontos</span>
-              </div>
-            </div>
-            <div class="produto">
-              <img src="../static/imagens/monitor.png" alt="" />
-              <div class="info-produto">
-                <span class="nome-produto">Monitor</span>
-                <span class="descricao-produto">Monitor gamer 144hz</span>
-                <span class="preco-produto">R$ 750,00</span>
-                <span class="preco-produto">7500 pontos</span>
-              </div>
-            </div>
-            <div class="produto">
-              <img src="../static/imagens/monitor.png" alt="" />
-              <div class="info-produto">
-                <span class="nome-produto">Monitor</span>
-                <span class="descricao-produto">Monitor gamer 144hz</span>
-                <span class="preco-produto">R$ 750,00</span>
-                <span class="preco-produto">7500 pontos</span>
-              </div>
-            </div>
-            <div class="produto">
-              <img src="../static/imagens/monitor.png" alt="" />
-              <div class="info-produto">
-                <span class="nome-produto">Monitor</span>
-                <span class="descricao-produto">Monitor gamer 144hz</span>
-                <span class="preco-produto">R$ 750,00</span>
-                <span class="preco-produto">7500 pontos</span>
-              </div>
-            </div>
+            {% endfor %}
           </div>
         </section>
       </main>

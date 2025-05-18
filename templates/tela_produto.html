@@ -71,53 +71,42 @@
       </div>
       </div>
 
-    <div class="produto-container">
+        <div class="produto-container">
         <div class="produto-info">
             <div class="produto-imagem">
-                <img src="../static/imagens/mouse-logitech.jpg" alt="Mouse Logitech">
-
+                <img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}">
             </div>
             <div class="info-produto-tela-produto">
                 <div class="preco-produto-tela-produto-container">
-                    <h1 class="nome-produto-tela-produto">Mouse Gamer</h1>
-                    <h1 class="marca-produto-tela-produto">Marca: %marca_produto%</h1>
+                    <h1 class="nome-produto-tela-produto">{{ produto.nome }}</h1>
+                    <h1 class="marca-produto-tela-produto">Marca: {{ produto.marca if produto.marca else 'Desconhecida' }}</h1>
                     <div class="preco-reais-pontos">
                         <div>
                             <img src="../static/imagens/cash_icon.png" alt="">
-                            <span class="preco-produto-tela-produto">R$ 100,00</span>
+                            <span class="preco-produto-tela-produto">R$ {{ "%.2f"|format(produto.preco) }}</span>
                         </div>
-                        
+
                         <span style="color: white;">ou</span>
                         <div>
                             <img src="../static/imagens/p-red-icon.png" alt="">
-                            <span class="preco-produto-tela-produto">1000 pontos</span>
+                            <span class="preco-produto-tela-produto">{{ produto.pontos }} pontos</span>
                         </div>
-                       
-                    </div>                 
+                    </div>
                 </div>
                 <div class="acoes-produto">
                     <div>
                         <label for="quantidade" class="quantidade-text">Quantidade:</label>
                         <select id="quantidade" name="quantidade" class="quantidade-select">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
+                            {% for i in range(1, 11) %}
+                                <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
                         </select>
                     </div>
-                    
-                    <button class="add-cart">Adicionar ao carrinho</button>
-                    
+
                     <form action="/adicionar_carrinho" method="post">
-                      <input type="hidden" name="produto_id" value="{{ produto.id }}">
-                      <input type="number" name="quantidade" value="1" min="1" style="width: 60px;">
-                      <button type="submit">Adicionar ao Carrinho</button>
+                        <input type="hidden" name="produto_id" value="{{ produto.id }}">
+                        <input type="number" name="quantidade" value="1" min="1" style="width: 60px;">
+                        <button type="submit" class="add-cart">Adicionar ao Carrinho</button>
                     </form>
 
                     <button class="buy-now">Comprar agora</button>
@@ -127,9 +116,10 @@
 
         <div class="descricao-completa">
             <p>Descrição</p>
-            <p>Este mouse da Logitech oferece alta precisão e conforto, com design ergonômico e botões programáveis para uma experiência superior de uso. Ideal para gamers e profissionais que buscam desempenho rápido e responsivo.</p>
+            <p>Este {{ produto.nome }} oferece alta precisão e conforto, com design ergonômico e desempenho responsivo. Ideal para quem busca qualidade e eficiência.</p>
         </div>
     </div>
+
 
     <script>
         lucide.createIcons();

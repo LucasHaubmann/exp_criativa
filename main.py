@@ -22,7 +22,7 @@ templates = Jinja2Templates(directory="templates")
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "123456",
+    "password": "6540",
     "database": "pointback"
 }
 
@@ -68,9 +68,38 @@ def get_user_from_session(request: Request):
 
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
+async def index(request: Request, db=Depends(get_db)):
     user = get_user_from_session(request)
-    return templates.TemplateResponse("index.html", {"request": request, "user": user})
+
+    try:
+        with db.cursor() as cursor:
+            cursor.execute("""
+                SELECT id, modelo, preco, pontos, imagem
+                FROM produto
+            """)
+            result = cursor.fetchall()
+            produtos = [
+                {
+                    "id": row[0],
+                    "nome": row[1],
+                    "preco": row[2],
+                    "pontos": row[3],
+                    "imagem_url": f"/imagem/{row[0]}"
+                }
+                for row in result
+            ] if result else []
+    except Exception as e:
+        print(f"Erro ao buscar produtos: {e}")
+        produtos = []
+
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "user": user,
+            "produtos": produtos
+        }
+    )
 @app.get("/logout")
 async def logout(request: Request):
     # limpa a sessao
@@ -323,10 +352,44 @@ async def post_cadastro_produto(
         db.close()
 
 
-@app.get("/tela_produto", response_class=HTMLResponse)
-async def tela_produto(request: Request):
+@app.get("/tela_produto/{produto_id}", response_class=HTMLResponse)
+async def tela_produto(request: Request, produto_id: int, db=Depends(get_db)):
     user = get_user_from_session(request)
-    return templates.TemplateResponse("tela_produto.html", {"request": request, "user": user})
+
+    produto = None
+    try:
+        with db.cursor() as cursor:
+            cursor.execute("""
+                SELECT id, modelo, preco, pontos, imagem
+                FROM produto
+                WHERE id = %s
+            """, (produto_id,))
+            row = cursor.fetchone()
+            if row:
+                produto = {
+                    "id": row[0],
+                    "nome": row[1],
+                    "preco": row[2],
+                    "pontos": row[3],
+                    "imagem_url": f"/imagem/{row[0]}"
+                }
+    except Exception as e:
+        print("Erro ao buscar produto:", e)
+
+    if not produto:
+        return templates.TemplateResponse(
+            "index.html",  # ou uma página de erro personalizada
+            {"request": request, "mensagem": "Produto não encontrado"}
+        )
+
+    return templates.TemplateResponse(
+        "tela_produto.html",
+        {
+            "request": request,
+            "user": user,
+            "produto": produto
+        }
+    )
 
 @app.post("/reset_session")
 async def reset_session(request: Request):

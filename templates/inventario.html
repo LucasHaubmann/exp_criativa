@@ -144,20 +144,20 @@
     </div>
 
     <div class="product-container">
-    {% for produto in produtos %}
-    <div class="product-card">
-        <img class="img-product-card" src="{{ produto.imagem_url }}" alt="{{ produto.nome }}">
-        <div class="product-name">{{ produto.nome }}</div>
-        <div class="product-price">R$ {{ produto.preco }}</div>
-        <div class="product-price">{{ produto.pontos }} Pontos</div>
-        <div class="product-price">
-            <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
+        {% for produto in produtos %}
+        <div class="product-card">
+            <img class="img-product-card" src="{{ produto.imagem_url }}" alt="{{ produto.nome }}">
+            <div class="product-name">{{ produto.nome }}</div>
+            <div class="product-price">R$ {{ produto.preco }}</div>
+            <div class="product-price">{{ produto.pontos }} Pontos</div>
+            <div class="product-price">
+                <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
+            </div>
+            <button class="view-btn">Ver</button>
+            <button class="edit-btn">Editar</button>
+            <button class="delete-btn">Excluir</button>
         </div>
-        <button class="view-btn">Ver</button>
-        <button class="edit-btn">Editar</button>
-        <button class="delete-btn">Excluir</button>
-    </div>
-    {% endfor %}
+        {% endfor %}
 </div>
 </body>
 </html>
