@@ -11,6 +11,7 @@
 </head>
 <body>
     <div>
+
       <nav class="sidebar" id="sidebar">
         <button class="close-btn" id="close-btn">&times;</button>
         <ul>
@@ -112,6 +113,13 @@
                     </div>
                     
                     <button class="add-cart">Adicionar ao carrinho</button>
+                    
+                    <form action="/adicionar_carrinho" method="post">
+                      <input type="hidden" name="produto_id" value="{{ produto.id }}">
+                      <input type="number" name="quantidade" value="1" min="1" style="width: 60px;">
+                      <button type="submit">Adicionar ao Carrinho</button>
+                    </form>
+
                     <button class="buy-now">Comprar agora</button>
                 </div>
             </div>

@@ -9,24 +9,20 @@ from starlette.middleware.sessions import SessionMiddleware
 from datetime import date, datetime
 import bcrypt
 import hashlib
-
+import traceback
 
 app = FastAPI()
 
-# Configuração de sessão (chave secreta para cookies de sessão)
 app.add_middleware(SessionMiddleware, secret_key="123456")
 
-# Configuração de arquivos estáticos
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Configuração de templates Jinja2
 templates = Jinja2Templates(directory="templates")
 
-# Configuração do banco de dados
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "6540",
+    "password": "123456",
     "database": "pointback"
 }
 
@@ -203,6 +199,74 @@ async def inventario(request: Request, db=Depends(get_db)):
         return RedirectResponse(url="/", status_code=303)
     finally:
         db.close()
+
+@app.post("/adicionar_carrinho")
+async def adicionar_carrinho(
+    request: Request,
+    produto_id: int = Form(...),
+    quantidade: int = Form(1),
+    db=Depends(get_db)
+):
+    user = get_user_from_session(request)
+    if not user:
+        return RedirectResponse(url="/cadastro", status_code=303)
+    try:
+        with db.cursor() as cursor:
+            # Verifica se o produto já está no carrinho
+            cursor.execute("""
+                SELECT quantidade FROM carrinho WHERE usuario_id = %s AND produto_id = %s
+            """, (user["id"], produto_id))
+            resultado = cursor.fetchone()
+
+            if resultado:
+                nova_qtd = resultado[0] + quantidade
+                cursor.execute("""
+                    UPDATE carrinho SET quantidade = %s WHERE usuario_id = %s AND produto_id = %s
+                """, (nova_qtd, user["id"], produto_id))
+            else:
+                cursor.execute("""
+                    INSERT INTO carrinho (usuario_id, produto_id, quantidade)
+                    VALUES (%s, %s, %s)
+                """, (user["id"], produto_id, quantidade))
+
+            db.commit()
+        return RedirectResponse(url="/inventario", status_code=303)
+    except Exception as e:
+        print("Erro ao adicionar ao carrinho:", e)
+        return RedirectResponse(url="/inventario", status_code=303)
+    finally:
+        db.close()
+
+@app.get("/carrinho", response_class=HTMLResponse)
+async def ver_carrinho(request: Request):
+    user = get_user_from_session(request)
+
+    if not user:
+        return RedirectResponse(url="/cadastro", status_code=303)
+
+    conn = pymysql.connect(host="localhost", user="root", password="123456", database="pointback")
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    cursor.execute("""
+    SELECT 
+        p.ID, p.Modelo, p.Marca, p.Categoria, p.pontos, p.valor, c.quantidade
+    FROM carrinho c
+    JOIN produto p ON c.produto_id = p.ID
+    WHERE c.usuario_id = %s
+    """, (user["id"],))
+
+
+    produtos = cursor.fetchall()
+
+    print("Produtos no carrinho:", produtos)
+
+    conn.close()
+
+    return templates.TemplateResponse("carrinho.html", {
+        "request": request,
+        "user": user,
+        "produtos": produtos
+    })
 
 
 @app.get("/imagem/{produto_id}")
