@@ -360,7 +360,7 @@ async def tela_produto(request: Request, produto_id: int, db=Depends(get_db)):
     try:
         with db.cursor() as cursor:
             cursor.execute("""
-                SELECT id, modelo, preco, pontos, imagem
+                SELECT id, categoria, modelo, marca, pontos, preco, imagem
                 FROM produto
                 WHERE id = %s
             """, (produto_id,))
@@ -368,9 +368,11 @@ async def tela_produto(request: Request, produto_id: int, db=Depends(get_db)):
             if row:
                 produto = {
                     "id": row[0],
-                    "nome": row[1],
-                    "preco": row[2],
-                    "pontos": row[3],
+                    "categoria": row[1],
+                    "nome": row[2],       # modelo
+                    "marca": row[3],
+                    "pontos": row[4],
+                    "preco": row[5],
                     "imagem_url": f"/imagem/{row[0]}"
                 }
     except Exception as e:
