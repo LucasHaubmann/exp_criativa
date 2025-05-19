@@ -7,6 +7,7 @@ CREATE TABLE produto (
   categoria VARCHAR(100) NOT NULL,
   modelo VARCHAR(100) NOT NULL,
   marca VARCHAR(100) DEFAULT NULL,
+  descricao TEXT DEFAULT NULL,
   pontos INT DEFAULT NULL,
   preco DECIMAL(10, 2) DEFAULT NULL,
   imagem LONGBLOB
@@ -37,13 +38,6 @@ CREATE TABLE pedido (
   FOREIGN KEY (id_produto) REFERENCES produto(ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE carrinho (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    produto_id INT NOT NULL,
-    quantidade INT NOT NULL DEFAULT 1,
-    data_adicionado DATETIME DEFAULT CURRENT_TIMESTAMP,
-);
-
 
 select * from  `usuario`;
+select * from  `produto`;		
