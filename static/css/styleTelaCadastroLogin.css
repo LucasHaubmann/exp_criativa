@@ -159,7 +159,7 @@ body.mobile-style .forgot-password:active {
   height: 100%;
 }
 
-.social-container {
+social-container {
   margin: 20px 0;
   display: flex;
   justify-content: center;
@@ -206,7 +206,7 @@ margin-bottom: 20px;
   visibility: hidden;
   min-width: 250px;
   max-width: 80%;
-  background-color: #ff4f4f;
+  background-color: #ff4f4f; /* Red background for errors */
   color: white;
   text-align: center;
   border-radius: 8px;
@@ -228,6 +228,10 @@ margin-bottom: 20px;
   top: 5px;
 }
 
+#toast.success {
+  background-color: #4caf50; /* Green background for success */
+  color: white;
+}
 
 /* Media Query para zoom em telas maiores */
 @media screen and (min-width: 480px) {

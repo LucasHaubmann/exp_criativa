@@ -60,29 +60,28 @@ function validateField(name, value) {
       return value === original ? "" : "As senhas não coincidem.";
     case "loginEmail":
         return regex.email.test(value) ? "" : "Email inválido.";
+    case "senhaLogin":
+        return value.trim() ? "" : "Campo obrigatório";
     default:
       return "";
   }
 }
 
-function showError(field, message, isFocused = false, forceShow = false) {
+function showError(field, message, isFocused = false) {
   const el = document.getElementById("error-" + field);
   const input = document.querySelector(`[name="${field}"]`);
-  const hasValue = input && input.value.trim().length > 0;
-
-  const deveMostrarErro = forceShow || hasValue;
 
   if (input) {
-    if (message && deveMostrarErro) {
-      input.classList.add("erro-campo");
+    if (message) {
+      input.classList.add("erro-campo"); // Mantém a borda vermelha
     } else {
       input.classList.remove("erro-campo");
     }
   }
 
   if (el) {
-    if (isFocused && message && deveMostrarErro) {
-      el.textContent = message;
+    if (isFocused && message) {
+      el.textContent = message; // Mostra a mensagem apenas em foco
       el.style.display = "block";
     } else {
       el.textContent = "";
@@ -110,43 +109,33 @@ function aplicarMascaraData(input) {
   });
 }
 
-function showToast(message) {
+function showToast(message, isSuccess = false) {
   const toast = document.getElementById("toast");
   if (!toast) return;
 
   toast.textContent = message;
-  toast.classList.add("show");
+  toast.className = isSuccess ? "show success" : "show";
 
   setTimeout(() => {
-    toast.classList.remove("show");
+    toast.classList.remove("show", "success");
   }, 3000);
 }
 
 function setupValidationFormObject(form, fields) {
-  let focusedField = null;
-
   fields.forEach((field) => {
     const input = form.querySelector(`[name="${field}"]`);
     if (!input) return;
 
-    input.addEventListener("focus", () => {
-      focusedField = field;
-      const value = input.value.trim();
-      const error = validateField(field, value);
-      showError(field, error, true);
-    });
-
     input.addEventListener("blur", () => {
-      focusedField = null;
       const value = input.value.trim();
       const error = validateField(field, value);
-      showError(field, error, false);
+      showError(field, error, false); // Mostra o erro ao perder o foco
     });
 
     input.addEventListener("input", () => {
       const value = input.value.trim();
       const error = validateField(field, value);
-      showError(field, error, focusedField === field);
+      showError(field, error, true); // Atualiza o erro enquanto digita
     });
   });
 
@@ -157,9 +146,9 @@ function setupValidationFormObject(form, fields) {
     fields.forEach((field) => {
       const inputEl = form.querySelector(`[name="${field}"]`);
       const value = inputEl.value.trim();
-      const error = validateField(field, value, true);
+      const error = validateField(field, value);
       if (!value || error) {
-        showError(field, error, false, true);
+        showError(field, error, false);
         camposInvalidos.push(field);
       } else {
         showError(field, "", false);
@@ -179,7 +168,9 @@ function setupValidationFormObject(form, fields) {
     })
       .then(async (response) => {
         if (response.redirected) {
-          window.location.href = response.url;
+          setTimeout(() => {
+            window.location.href = response.url;
+          }, 1000); // 1 segundo
         } else if (response.status === 303) {
           showError("senhaLogin", "Email ou senha incorretos.", true, true);
           return;
@@ -237,6 +228,58 @@ document.addEventListener("DOMContentLoaded", () => {
         showError("confirmPassword", msg, confirmInput === document.activeElement);
       });
     }
+
+  const formLogin = document.querySelector("form[action='/login']");
+  if (formLogin) {
+    const passwordInput = formLogin.querySelector("input[name='senhaLogin']");
+
+    passwordInput.addEventListener("focus", () => {
+      const value = passwordInput.value.trim();
+      const error = validateField("senhaLogin", value);
+      showError("senhaLogin", error, true);
+    });
+
+    passwordInput.addEventListener("blur", () => {
+      const value = passwordInput.value.trim();
+      const error = validateField("senhaLogin", value);
+      showError("senhaLogin", error, false);
+    });
+
+    passwordInput.addEventListener("input", () => {
+      const value = passwordInput.value.trim();
+      const error = validateField("senhaLogin", value);
+      showError("senhaLogin", error, passwordInput === document.activeElement);
+    });
+
+    formLogin.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const value = passwordInput.value.trim();
+      const error = validateField("senhaLogin", value);
+      showError("senhaLogin", error, false);
+
+      if (error) return;
+
+      // Simulação de envio e resposta do servidor
+      try {
+        const response = await fetch(formLogin.action, {
+          method: "POST",
+          body: new FormData(formLogin),
+        });
+
+        if (response.ok) {
+          showToast("Login realizado com sucesso!", true); // Exibe o toast de sucesso
+          setTimeout(() => {
+            window.location.href = response.url || "/";
+          }, 1000); // Reduzido para 1 segundo
+        } else {
+          showError("senhaLogin", "Email ou senha incorretos.", false);
+        }
+      } catch (err) {
+        console.error("Erro no login:", err);
+        showToast("Erro ao realizar login. Tente novamente.", false);
+      }
+    });
+  }
 });
 
 window.addEventListener("load", () => {
