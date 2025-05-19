@@ -516,7 +516,10 @@ a {
   font-family: 'Montserrat', sans-serif;
 }
 
-
+.img-center {
+  display: flex;
+  justify-content: center;
+}
 
 .produto-card:hover {
   transform: scale(1.02);

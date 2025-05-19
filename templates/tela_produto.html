@@ -25,7 +25,7 @@
       </nav>
 
         <header class="header">
-        <div class="icon-wrapper">
+        <div class="icon-wrapper icon-sidebar">
           <i data-lucide="menu" id="menu-btn" class="custom-icon"></i>
         </div>
          <a href="/"><img src="../static/imagens/Point_Back_LogoAzul.png" alt="" /></a>
@@ -45,6 +45,7 @@
             <li><a href="/perfil">Meu perfil</a></li>
             <li><a href="/meus-pedidos">Meus pedidos</a></li>
             <li><a href="/favoritos">Lista de desejos</a></li>
+            <li><a href="/carrinho">Carrinho</a></li>
             <li><a href="/inventario">Perfil vendedor</a></li>
 
             {% if user.admin %}
@@ -105,7 +106,6 @@
 
                     <form action="/adicionar_carrinho" method="post">
                         <input type="hidden" name="produto_id" value="{{ produto.id }}">
-                        <input type="number" name="quantidade" value="1" min="1" style="width: 60px;">
                         <button type="submit" class="add-cart">Adicionar ao Carrinho</button>
                     </form>
 
@@ -116,7 +116,7 @@
 
         <div class="descricao-completa">
             <p>Descrição</p>
-            <p>Este {{ produto.nome }} oferece alta precisão e conforto, com design ergonômico e desempenho responsivo. Ideal para quem busca qualidade e eficiência.</p>
+            <p>{{ produto.descricao }}</p>
         </div>
     </div>
 

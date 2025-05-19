@@ -312,7 +312,7 @@ async def imagem_produto(produto_id: int, db=Depends(get_db)):
         db.close()
 
 @app.get("/atendimento", response_class=HTMLResponse)
-async def cadastro_produto(request: Request):
+async def atendimento(request: Request):
     return templates.TemplateResponse("atendimento.html", {"request": request})
 
 @app.get("/cadastro_produto", response_class=HTMLResponse)
@@ -325,6 +325,7 @@ async def post_cadastro_produto(
     categoria: str = Form(...),
     modelo: str = Form(...),
     marca: str = Form(...),
+    descricao: str = Form(...),
     preco: float = Form(...),
     pontos: int = Form(...),
     imagem: UploadFile = File(...),
@@ -336,10 +337,10 @@ async def post_cadastro_produto(
 
         with db.cursor() as cursor:
             query = """
-                INSERT INTO produto (categoria, modelo, marca, preco, pontos, imagem)
-                VALUES (%s, %s, %s, %s, %s, %s)
+               INSERT INTO produto (categoria, modelo, marca, descricao, preco, pontos, imagem)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
-            cursor.execute(query, (categoria, modelo, marca, preco, pontos, imagem_bytes))
+            cursor.execute(query, (categoria, modelo, marca, descricao, preco, pontos, imagem_bytes))
             db.commit()
 
         return RedirectResponse(url="/inventario", status_code=303)
@@ -360,7 +361,7 @@ async def tela_produto(request: Request, produto_id: int, db=Depends(get_db)):
     try:
         with db.cursor() as cursor:
             cursor.execute("""
-                SELECT id, categoria, modelo, marca, pontos, preco, imagem
+                SELECT id, categoria, modelo, marca, descricao, pontos, preco, imagem
                 FROM produto
                 WHERE id = %s
             """, (produto_id,))
@@ -369,10 +370,11 @@ async def tela_produto(request: Request, produto_id: int, db=Depends(get_db)):
                 produto = {
                     "id": row[0],
                     "categoria": row[1],
-                    "nome": row[2],       # modelo
+                    "nome": row[2],
                     "marca": row[3],
-                    "pontos": row[4],
-                    "preco": row[5],
+                    "descricao": row[4],
+                    "pontos": row[5],
+                    "preco": row[6],
                     "imagem_url": f"/imagem/{row[0]}"
                 }
     except Exception as e:
