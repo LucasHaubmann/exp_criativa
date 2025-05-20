@@ -33,7 +33,7 @@ CREATE TABLE pedido (
   dt_Pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
 
   FOREIGN KEY (id_comprador) REFERENCES usuario(ID),
-  FOREIGN KEY (id_vendedor) REFERENCES usuario(ID),
+  FOREIGN KEY (id_vendedor) REFERENCES usuario(ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE produto_pedido (
