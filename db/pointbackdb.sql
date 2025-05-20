@@ -40,10 +40,27 @@ CREATE TABLE produto_pedido (
   ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
   id_pedido INT NOT NULL,
   id_produto INT NOT NULL,
+  quantidade INT NOT NULL,
 
   FOREIGN KEY (id_pedido) REFERENCES pedido(ID),
   FOREIGN KEY (id_produto) REFERENCES produto(ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE carrinho (
+  ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  id_comprador INT NOT NULL,
+
+  FOREIGN KEY (id_comprador) REFERENCES usuario(ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE produto_carrinho (
+  id_carrinho INT NOT NULL,
+  id_produto  INT NOT NULL,
+  quantidade INT NOT NULL,
+
+  PRIMARY KEY (id_carrinho, id_produto),
+  FOREIGN KEY (id_carrinho) REFERENCES carrinho(id),
+  FOREIGN KEY (id_produto)  REFERENCES produto(ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 select * from  `usuario`;
-select * from  `produto`;		
