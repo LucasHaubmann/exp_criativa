@@ -26,18 +26,24 @@ CREATE TABLE usuario (
 
 CREATE TABLE pedido (
   ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  id_Comprador INT NOT NULL,
-  id_Vendedor INT NOT NULL,
-  id_Produto INT NOT NULL,
+  id_comprador INT NOT NULL,
+  id_vendedor INT NOT NULL,
   valor DECIMAL(10, 2) DEFAULT NULL,
   valor_Pontos INT DEFAULT NULL,
   dt_Pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
 
   FOREIGN KEY (id_comprador) REFERENCES usuario(ID),
   FOREIGN KEY (id_vendedor) REFERENCES usuario(ID),
-  FOREIGN KEY (id_produto) REFERENCES produto(ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE produto_pedido (
+  ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  id_pedido INT NOT NULL,
+  id_produto INT NOT NULL,
+
+  FOREIGN KEY (id_pedido) REFERENCES pedido(ID),
+  FOREIGN KEY (id_produto) REFERENCES produto(ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 select * from  `usuario`;
 select * from  `produto`;		
