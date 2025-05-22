@@ -104,9 +104,10 @@
                         </select>
                     </div>
 
-                    <form action="/adicionar_carrinho" method="post">
-                        <input type="hidden" name="produto_id" value="{{ produto.id }}">
-                        <button type="submit" class="add-cart">Adicionar ao Carrinho</button>
+                    <form action="/carrinho/adicionar" method="post">
+                        <input type="hidden" name="id_produto" value="{{ produto.id }}">
+                        <input type="number" name="quantidade" value="1" min="1">
+                        <button type="submit">Adicionar ao Carrinho</button>
                     </form>
 
                     <button class="buy-now">Comprar agora</button>

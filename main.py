@@ -22,7 +22,7 @@ templates = Jinja2Templates(directory="templates")
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "123456",
+    "password": "6540",
     "database": "pointback"
 }
 
@@ -350,7 +350,7 @@ async def ver_carrinho(request: Request):
         return RedirectResponse(url="/cadastro", status_code=303)
 
     conn = pymysql.connect(
-        host="localhost", user="root", password="123456", database="pointback"
+        host="localhost", user="root", password="6540", database="pointback"
     )
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
@@ -372,9 +372,12 @@ async def ver_carrinho(request: Request):
         """, (id_carrinho,))
         produtos = cursor.fetchall()
 
+        # Adiciona a URL da imagem em cada produto
+        for produto in produtos:
+            produto["imagem_url"] = f"/imagem/{produto['ID']}"
+
     conn.close()
 
-    
     total_pontos = sum(p["pontos"] * p["quantidade"] for p in produtos if p["pontos"])
     total_dinheiro = sum(p["preco"] * p["quantidade"] for p in produtos if p["preco"])
 
@@ -384,8 +387,8 @@ async def ver_carrinho(request: Request):
         "produtos": produtos,
         "total_pontos": total_pontos,
         "total_dinheiro": total_dinheiro
-        
     })
+
 
 
 

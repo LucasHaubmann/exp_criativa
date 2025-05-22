@@ -507,6 +507,18 @@ a {
   width: 12px;
 }
 
+
+/* carrinho */
+
+.carrinho-container {
+  display: flex;
+  justify-content: center;  /* Centraliza horizontalmente */
+  gap: 32px;                 /* Espaço entre os elementos internos */
+  max-width: 80%;
+  margin: 40px auto;         /* Centraliza horizontalmente + espaçamento vertical */
+  flex-wrap: wrap;           /* Quebra para linha de baixo se necessário */
+}
+
 .produtos-container {
   display: flex;
   flex-wrap: wrap;
@@ -531,8 +543,9 @@ a {
   background-color: #f9f9f9;
 }
 
-.produto-info {
-  padding: 16px;
+.carrinho-produto-info {
+  padding: 0px;
+  height: 125px;
 }
 
 .produto-nome {
@@ -558,14 +571,23 @@ a {
 .produto-pontos {
   font-size: 14px;
   color: #ffaa00;
+  display: inline-block;
+  margin: 0;
 }
 
 .produtos-container {
   display: flex;
-  flex-direction: column; /* <<< coloca os itens em coluna */
-  align-items: center;     /* centraliza no meio da página */
-  gap: 20px;               /* espaço entre os cards */
+  align-items: center;
+  gap: 20px;
   padding: 20px;
+  background-color: whitesmoke;
+  border-radius: 10px;
+  width: 1000px;
+}
+
+.produto-pontos-container {
+    display: flex;
+    justify-content: center;
 }
 
 .produto-card {
@@ -578,15 +600,45 @@ a {
   border-radius: 8px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   text-align: center;
+  width: 300px;
+  height: 300px;
+}
+
+.ponto-img{
+    height: 30px;
+}
+
+.botao-retirar {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.botao-retirar:hover {
+  background-color: #e04344;
+  transform: scale(1.05);
+}
+
+.botao-retirar:active {
+  transform: scale(0.98);
 }
 
 .produto-card * {
   margin: 0;
 }
 
-.produto-card img,
+.produto-carrinho-img{
+    height:100px
+}
+
 .produto-card h2,
 .produto-card p {
   text-align: center;
-  width: 100%;
 }

@@ -24,10 +24,10 @@
       </nav>
 
         <header class="header">
-        <div class="icon-wrapper">
+        <div class="icon-wrapper icon-sidebar">
           <i data-lucide="menu" id="menu-btn" class="custom-icon"></i>
         </div>
-        <img src="../static/imagens/Point_Back_LogoAzul.png" alt="" />
+         <a href="/"><img src="../static/imagens/Point_Back_LogoAzul.png" alt="" /></a>
         <div class="icon-wrapper user-icon">
           {% if user %}
           <div class="user-info">
@@ -58,6 +58,7 @@
           </ul>
         </div>
       </header>
+
       <div class="header-menu">
         <ul class="header-menu-list">
           <li><a href="/promocoes">PROMOÇÕES</a></li>
@@ -68,24 +69,55 @@
           <li><a href="/atendimento">ATENDIMENTO</a></li>
         </ul>
       </div>
+
+
       </div>
+    <div class="carrinho-container">
+        <div class="produtos-container">
+        {% for produto in produtos %}
+          <div class="produto-card">
+          <img class="produto-carrinho-img" src="{{ produto.imagem_url }}" alt="{{ produto.nome }}" />
 
-    <script src="/static/js/script.js"></script>
+          <div class="carrinho-produto-info">
+            <h2 class="produto-nome">{{ produto.modelo }}</h2>
+            <p class="produto-preco">Valor: R$ {{ "%.2f"|format(produto.preco) }}</p>
+            <div class="produto-pontos-container">
+              <p class="produto-pontos">{{ produto.pontos }} Pontos</p>
+              <img class="ponto-img" src="../static/imagens/p_moeda_azul.png" alt="Pontos">
+            </div>
+            <p class="produto-quantidade">{{ produto.quantidade }} un.</p>
+          </div>
 
-    <div class="produtos-container">
-    {% for produto in produtos %}    
-    <div class="produto-card">
-    <img src="{{ produto.imagem }}" alt="{{ produto.modelo }}" class="produto-imagem" />
-    <div class="produto-info">
-      <h2 class="produto-nome">{{ produto.Modelo }}</h2>
-      <p class="produto-valor">Valor: R$ {{ "%.2f"|format(produto.valor) }}</p>
-      <p class="produto-pontos">{{ produto.pontos }} Pontos</p>
+          <form action="/carrinho/retirar" method="post">
+            <input type="hidden" name="id_produto" value="{{ produto.ID }}">
+            <input type="hidden" name="quantidade" value="1">
+            <button class="botao-retirar" type="submit">Retirar</button>
+          </form>
+
+        </div>
+        {% endfor %}
+      </div>
+        <div style="margin: 20px auto; max-width: 320px; background-color: #f0f0f0; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); font-family: 'Montserrat', sans-serif; text-align: center;">
+      <strong style="font-size: 1.1em;">Total do Carrinho:</strong><br>
+      <span style="display: block; margin-top: 8px;">{{ total_pontos }} Pontos</span>
+      <span style="display: block; margin-bottom: 15px;">R$ {{ '%.2f'|format(total_dinheiro) }}</span>
+
+      <form action="/pagar/pontos" method="post" style="margin-bottom: 10px;">
+        <button type="submit" style="font-size: 17px; width: 100%; padding: 20px; background-color: #0077cc; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer;">
+          Pagar com Pontos
+        </button>
+      </form>
+
+      <form action="/pagar/dinheiro" method="post">
+        <button type="submit" style="font-size: 17px; width: 100%; padding: 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer;">
+          Pagar com Dinheiro
+        </button>
+      </form>
     </div>
-  </div>
-  {% endfor %}
-</div>
-
-
-
+    </div>
+    <script src="/static/js/script.js"></script>
+    <script>
+      lucide.createIcons();
+    </script>
 </body>
 </html>
