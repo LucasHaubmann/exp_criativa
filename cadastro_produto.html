@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="shortcut icon" href="../imagens/pb icon.png" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../static/imagens/pb icon.png" type="image/x-icon">
+    <title>Cadastro de Produto</title>
+    <style>
+        :root {
+            --cor-1: #3CA6A6;
+            --cor-2: #3CA6A6;
+            --cor-3: #026773;
+            --cor-4: #024959;
+            --cor-5: #012E40;
+            --cor-acento: #00B8A9;
+            --cor-erro: #D32F2F;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--cor-1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        h2 {
+            color: var(--cor-5);
+            font-size: 28px;
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        form {
+            width: 100%;
+            max-width: 400px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--cor-4);
+        }
+
+        select, input {
+            width: 100%; /* Ajuste para manter os elementos dentro do container */
+            padding: 12px;
+            border: 2px solid var(--cor-3);
+            border-radius: 8px;
+            font-size: 16px;
+            background: #f8f8f8;
+            color: var(--cor-5);
+            outline: none;
+            transition: 0.3s;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--cor-acento);
+            box-shadow: 0 0 8px rgba(0, 184, 169, 0.4);
+        }
+
+        .error {
+            color: var(--cor-erro);
+            font-size: 12px;
+            display: none;
+        }
+
+        button {
+            width: 100%; /* Garante que os botões não ultrapassem a largura */
+            padding: 14px;
+            background: var(--cor-acento);
+            border: none;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .header-cadastro-produto {
+            position: fixed;
+            top: 0;
+            left: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        button:hover {
+            background: var(--cor-3);
+            transform: scale(1.03);
+        }
+
+        .add-product-btn {
+            background-color: #f44336;
+        }
+
+        .add-product-btn:hover {
+            background-color: #c62828;
+        }
+
+        /* Ajustes para telas menores */
+        @media (max-width: 480px) {
+            body {
+                height: auto;
+                padding: 10px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            form {
+                padding: 15px;
+                max-width: 100%;
+            }
+
+            select, input {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+    </style>
+    <script>
+        function validarFormulario(event) {
+            event.preventDefault();
+            let valido = true;
+
+
+            const nome = document.getElementById("nome");
+            const marca = document.getElementById("marca");
+            const modelo = document.getElementById("modelo");
+            const preco = document.getElementById("preco");
+
+            const erroMarca = document.getElementById("erroMarca");
+            const erroNome = document.getElementById("erroNome");
+            const erroModelo = document.getElementById("erroModelo");
+            const erroPreco = document.getElementById("erroPreco");
+
+            if (marca.value.trim() === "") {
+                erroMarca.style.display = "block";
+                valido = false;
+            } else {
+                erroMarca.style.display = "none";
+            }
+
+            if (modelo.value.trim() === "") {
+                erroModelo.style.display = "block";
+                valido = false;
+            } else {
+                erroModelo.style.display = "none";
+            }
+
+            if (preco.value.trim() === "" || isNaN(preco.value) || parseFloat(preco.value) <= 0) {
+                erroPreco.style.display = "block";
+                valido = false;
+            } else {
+                erroPreco.style.display = "none";
+            }
+
+            if (valido) {
+                alert("<Pro></Pro>duto cadastrado com sucesso!");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="header-cadastro-produto">
+        <button type="button" onclick="window.location.href='/inventario'" class="add-product-btn">Voltar</button>
+    </div>
+    <h2>Cadastro de Produto</h2>
+    <form action="/cadastro_produto" method="post" enctype="multipart/form-data">
+        <label for="categoria">Categoria:</label>
+        <select id="categoria" name="categoria">
+            <option value="armazenamento">Armazenamento Externo</option>
+            <option value="cpu">CPU</option>
+            <option value="gpu">GPU</option>
+            <option value="placa_mae">Placa-mãe</option>
+            <option value="memoria">Memória RAM</option>
+            <option value="cooler">Cooler/Resfriamento</option>
+            <option value="fonte">Fonte de Alimentação</option>
+            <option value="gabinete">Gabinete</option>
+            <option value="monitor">Monitor</option>
+            <option value="teclado">Teclado</option>
+            <option value="mouse">Mouse</option>
+            <option value="headset">Headset</option>
+            <option value="notebook">Notebook</option>
+            <option value="perifericos">Periféricos</option>
+            <option value="outros">Outros</option>
+        </select>
+        
+        <label for="nome">Referência:</label>
+        <input type="text" id="nome" name="nome" placeholder="Digite a referência do produto">
+        <span class="error" id="erroNome">Campo obrigatório</span>
+
+        <label for="marca">Marca:</label>
+        <input type="text" id="marca" name="marca" placeholder="Digite a marca">
+        <span class="error" id="erroMarca">Campo obrigatório</span>
+
+        <label for="modelo">Modelo:</label>
+        <input type="text" id="modelo" name="modelo" placeholder="Digite o modelo">
+        <span class="error" id="erroModelo">Campo obrigatório</span>
+
+        <label for="descricao">Descrição:</label>
+        <textarea id="descricao" name="descricao" rows="2" placeholder="Digite a descrição do produto" style="resize: vertical; padding: 12px; border: 2px solid var(--cor-3); border-radius: 8px; font-size: 16px; background: #f8f8f8; color: var(--cor-5); outline: none;"></textarea>
+
+        <label for="preco">Preço:</label>
+        <input type="number" id="preco" name="preco" step="0.01" placeholder="Digite o preço">
+        <span class="error" id="erroPreco">Informe um valor válido</span>
+
+        <label for="pontos">Preço em Pontos:</label>
+        <input type="number" id="pontos" name="pontos" placeholder="Digite o preço em pontos">
+        <span class="error" id="erroPontos">Informe um valor válido</span>
+
+        <label for="imagem">Imagem do Produto:</label>
+        <input type="file" id="imagem" name="imagem" accept="image/*">
+        <span class="error" id="erroImagem">Envie uma imagem válida</span>
+
+        <button type="submit">Cadastrar</button>
+
+    </form>
+</body>
+</html>
+

@@ -22,7 +22,7 @@ templates = Jinja2Templates(directory="templates")
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "6540",
+    "password": "123456",
     "database": "pointback"
 }
 
@@ -211,7 +211,7 @@ async def inventario(request: Request, db=Depends(get_db)):
                     "nome": row[1],  # modelo -> nome para facilitar no HTML
                     "preco": row[2],
                     "pontos": row[3],
-                    "imagem_url": f"/imagem/{row[0]}"  # nova rota para servir imagem
+                    "imagem_url": f"/imagem/{row[0]}" 
                 }
                 for row in result
             ]
@@ -229,42 +229,118 @@ async def inventario(request: Request, db=Depends(get_db)):
     finally:
         db.close()
 
-@app.post("/adicionar_carrinho")
-async def adicionar_carrinho(
+@app.post("/carrinho/retirar")
+def retirar_produto_carrinho(
     request: Request,
-    produto_id: int = Form(...),
-    quantidade: int = Form(1),
-    db=Depends(get_db)
+    id_produto: int = Form(...),
+    quantidade: int = Form(...),  
+    db=Depends(get_db),
 ):
     user = get_user_from_session(request)
     if not user:
-        return RedirectResponse(url="/cadastro", status_code=303)
-    try:
-        with db.cursor() as cursor:
-            # Verifica se o produto já está no carrinho
-            cursor.execute("""
-                SELECT quantidade FROM carrinho WHERE usuario_id = %s AND produto_id = %s
-            """, (user["id"], produto_id))
-            resultado = cursor.fetchone()
+        return RedirectResponse("/login", status_code=303)
 
-            if resultado:
-                nova_qtd = resultado[0] + quantidade
-                cursor.execute("""
-                    UPDATE carrinho SET quantidade = %s WHERE usuario_id = %s AND produto_id = %s
-                """, (nova_qtd, user["id"], produto_id))
-            else:
-                cursor.execute("""
-                    INSERT INTO carrinho (usuario_id, produto_id, quantidade)
-                    VALUES (%s, %s, %s)
-                """, (user["id"], produto_id, quantidade))
+    usuario_id = user["id"]
 
-            db.commit()
-        return RedirectResponse(url="/inventario", status_code=303)
-    except Exception as e:
-        print("Erro ao adicionar ao carrinho:", e)
-        return RedirectResponse(url="/inventario", status_code=303)
-    finally:
-        db.close()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT ID FROM carrinho WHERE id_comprador = %s", (usuario_id,))
+    carrinho = cursor.fetchone()
+
+    if not carrinho:
+        cursor.close()
+        return RedirectResponse("/carrinho", status_code=303) 
+
+    carrinho_id = carrinho[0]
+
+
+    cursor.execute(
+        "SELECT quantidade FROM produto_carrinho WHERE id_carrinho = %s AND id_produto = %s",
+        (carrinho_id, id_produto)
+    )
+    item = cursor.fetchone()
+
+    if not item:
+        cursor.close()
+        return RedirectResponse("/carrinho", status_code=303) 
+
+    quantidade_atual = item[0]
+
+    if quantidade_atual <= quantidade:
+       
+        cursor.execute(
+            "DELETE FROM produto_carrinho WHERE id_carrinho = %s AND id_produto = %s",
+            (carrinho_id, id_produto)
+        )
+    else:
+      
+        nova_quantidade = quantidade_atual - quantidade
+        cursor.execute(
+            "UPDATE produto_carrinho SET quantidade = %s WHERE id_carrinho = %s AND id_produto = %s",
+            (nova_quantidade, carrinho_id, id_produto)
+        )
+
+    db.commit()
+    cursor.close()
+
+    return RedirectResponse("/carrinho", status_code=303)
+
+
+
+@app.post("/carrinho/adicionar")
+def adicionar_carrinho(
+    request: Request,
+    id_produto: int = Form(...),
+    quantidade: int = Form(...),
+    db=Depends(get_db),
+):
+    user = get_user_from_session(request)
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+    usuario_id = user["id"] 
+
+    cursor = db.cursor()
+
+    cursor.execute(
+        "SELECT ID FROM carrinho WHERE id_comprador = %s", (usuario_id,)
+    )
+    carrinho = cursor.fetchone()
+
+    if not carrinho:
+        cursor.execute(
+            "INSERT INTO carrinho (id_comprador) VALUES (%s)", (usuario_id,)
+        )
+        db.commit()
+        cursor.execute("SELECT LAST_INSERT_ID()")
+        carrinho_id = cursor.fetchone()[0]
+    else:
+        carrinho_id = carrinho[0]
+
+    cursor.execute(
+        "SELECT quantidade FROM produto_carrinho WHERE id_carrinho = %s AND id_produto = %s",
+        (carrinho_id, id_produto)
+    )
+    item = cursor.fetchone()
+
+    if item:
+        nova_qtd = item[0] + quantidade
+        cursor.execute(
+            "UPDATE produto_carrinho SET quantidade = %s WHERE id_carrinho = %s AND id_produto = %s",
+            (nova_qtd, carrinho_id, id_produto)
+        )
+    else:
+        cursor.execute(
+            "INSERT INTO produto_carrinho (id_carrinho, id_produto, quantidade) VALUES (%s, %s, %s)",
+            (carrinho_id, id_produto, quantidade)
+        )
+
+    db.commit()
+    cursor.close()
+
+    return RedirectResponse("/carrinho", status_code=303)
+
+
+
 
 @app.get("/carrinho", response_class=HTMLResponse)
 async def ver_carrinho(request: Request):
@@ -273,29 +349,44 @@ async def ver_carrinho(request: Request):
     if not user:
         return RedirectResponse(url="/cadastro", status_code=303)
 
-    conn = pymysql.connect(host="localhost", user="root", password="123456", database="pointback")
+    conn = pymysql.connect(
+        host="localhost", user="root", password="123456", database="pointback"
+    )
     cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-    cursor.execute("""
-    SELECT 
-        p.ID, p.Modelo, p.Marca, p.Categoria, p.pontos, p.valor, c.quantidade
-    FROM carrinho c
-    JOIN produto p ON c.produto_id = p.ID
-    WHERE c.usuario_id = %s
-    """, (user["id"],))
+    cursor.execute("SELECT ID FROM carrinho WHERE id_comprador = %s", (user["id"],))
+    carrinho = cursor.fetchone()
 
+    produtos = []
 
-    produtos = cursor.fetchall()
+    if carrinho:
+        id_carrinho = carrinho["ID"]
 
-    print("Produtos no carrinho:", produtos)
+        cursor.execute("""
+            SELECT 
+                p.ID, p.nome, p.modelo, p.marca, p.categoria, 
+                p.pontos, p.preco, pc.quantidade
+            FROM produto_carrinho pc
+            JOIN produto p ON pc.id_produto = p.ID
+            WHERE pc.id_carrinho = %s
+        """, (id_carrinho,))
+        produtos = cursor.fetchall()
 
     conn.close()
+
+    
+    total_pontos = sum(p["pontos"] * p["quantidade"] for p in produtos if p["pontos"])
+    total_dinheiro = sum(p["preco"] * p["quantidade"] for p in produtos if p["preco"])
 
     return templates.TemplateResponse("carrinho.html", {
         "request": request,
         "user": user,
-        "produtos": produtos
+        "produtos": produtos,
+        "total_pontos": total_pontos,
+        "total_dinheiro": total_dinheiro
+        
     })
+
 
 
 @app.get("/imagem/{produto_id}")
@@ -323,6 +414,7 @@ async def cadastro_produto(request: Request):
 async def post_cadastro_produto(
     request: Request,
     categoria: str = Form(...),
+    nome: str = Form(...),
     modelo: str = Form(...),
     marca: str = Form(...),
     descricao: str = Form(...),
@@ -337,10 +429,10 @@ async def post_cadastro_produto(
 
         with db.cursor() as cursor:
             query = """
-               INSERT INTO produto (categoria, modelo, marca, descricao, preco, pontos, imagem)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+               INSERT INTO produto (nome, categoria, modelo, marca, descricao, preco, pontos, imagem)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
-            cursor.execute(query, (categoria, modelo, marca, descricao, preco, pontos, imagem_bytes))
+            cursor.execute(query, (nome, categoria, modelo, marca, descricao, preco, pontos, imagem_bytes))
             db.commit()
 
         return RedirectResponse(url="/inventario", status_code=303)
