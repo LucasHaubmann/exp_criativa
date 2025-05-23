@@ -1,7 +1,8 @@
 const regex = {
   nome: /^(?!\s*$)[a-zA-ZÀ-ÿ\s]{3,}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  senha: /^.{6,}$/,
+  senha: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
+
 };
 
 function validarCPF(cpf) {
@@ -53,7 +54,7 @@ function validateField(name, value) {
     case "email":
       return regex.email.test(value) ? "" : "Email inválido.";
     case "senha":
-      return regex.senha.test(value) ? "" : "Senha deve ter no mínimo 6 caractéres.";
+      return regex.senha.test(value) ? "" : "Senha fraca: use letras, números e símbolos.";
     case "confirmPassword":
       const original = document.getElementById("senhaCadastro").value.trim();
       if (value.length == 0){
@@ -131,18 +132,19 @@ function setupValidationFormObject(form, fields) {
     input.addEventListener("blur", () => {
       const value = input.value.trim();
       const error = validateField(field, value);
-      showError(field, error, false); // Mostra o erro ao perder o foco
+      showError(field, error, false);
     });
 
     input.addEventListener("input", () => {
       const value = input.value.trim();
       const error = validateField(field, value);
-      showError(field, error, true); // Atualiza o erro enquanto digita
+      showError(field, error, true);
     });
   });
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
+
     const camposInvalidos = [];
 
     fields.forEach((field) => {
@@ -162,36 +164,45 @@ function setupValidationFormObject(form, fields) {
       return;
     }
 
-    // Envio automático após validação
     const formData = new FormData(form);
     fetch(form.action, {
       method: "POST",
       body: formData,
     })
       .then(async (response) => {
-        if (response.redirected) {
+        if (response.status == 303) {
+          showToast("Cadastro realizado com sucesso!", true);
           setTimeout(() => {
-            window.location.href = response.url;
-          }, 1000); // 1 segundo
-        } else if (response.status === 303) {
-          showError("senhaLogin", "Email ou senha incorretos.", true, true);
+            window.location.href = "/";
+          }, 1000);
           return;
+        }
+
+        let data;
+        try {
+          data = await response.json();
+        } catch {
+          data = { mensagem: "Cadastro realizado com sucesso!" };
+        }
+
+        if (response.status === 200) {
+          showToast(data.mensagem || "Operação realizada com sucesso!", true);
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1000);
+        } else if (response.status === 401) {
+          showToast(data.mensagem || "Não autorizado.", false);
         } else {
-          const data = await response.text();
-          console.log("Resposta:", data);
+          showToast(data.mensagem || "Erro ao processar.", false);
         }
       })
-      .then((data) => {
-        console.log("Resposta:", data);
-        form.reset();
-        fields.forEach((field) => showError(field, "", false));
-      })
       .catch((error) => {
-        console.error("Erro ao enviar:", error);
+        console.error("Erro:", error);
         showToast("Erro ao enviar o formulário.");
       });
   });
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const cpfInput = document.querySelector("input[name='cpf']");
@@ -282,6 +293,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    fetch("/session-message")
+        .then(res => res.json())
+        .then(data => {
+            if (data.mensagem) {
+                showToast(data.mensagem, data.mensagem.toLowerCase().includes("sucesso"));
+            }
+        });
+});
 });
 
 window.addEventListener("load", () => {

@@ -23,7 +23,7 @@ templates.env.filters['b64encode'] = lambda b: base64.b64encode(b).decode('utf-8
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "6540",
+    "password": "1234567",
     "database": "pointback"
 }
 
@@ -214,7 +214,6 @@ async def cadastrar_usuario(
     finally:
         db.close()
 
-
 @app.post("/login")
 async def login(
     request: Request,
@@ -224,18 +223,20 @@ async def login(
 ):
     try:
         with db.cursor() as cursor:
-            # pega a senha em hash no bd
             cursor.execute("SELECT id, senha FROM usuario WHERE email = %s", (loginEmail,))
             result = cursor.fetchone()
             if result:
                 user_id, senha_hash = result
-                # verifica se a senha fornecida corresponde ao hash armazenado
-                if bcrypt.checkpw(senhaLogin.encode('utf-8'), senha_hash.encode('utf-8')):
-                    # inicia a sessao
+
+                if isinstance(senha_hash, str):
+                    senha_hash = senha_hash.encode('utf-8')
+
+                if bcrypt.checkpw(senhaLogin.encode('utf-8'), senha_hash):
                     request.session["user_id"] = user_id
-                    return RedirectResponse(url="/", status_code=303)
-            # credenciais invalidas
-            return RedirectResponse(url="/cadastro", status_code=303)
+                    return JSONResponse(content={"mensagem": "Login realizado com sucesso!"}, status_code=200)
+        
+        # Se falhou
+        return JSONResponse(content={"mensagem": "Login incorreto. Email ou senha errados."}, status_code=401)
     finally:
         db.close()
 
@@ -792,5 +793,11 @@ async def adm_excluir_usuario(
         raise HTTPException(status_code=500, detail="Erro ao excluir usuário.")
     finally:
         db.close()
+
+@app.get("/session-message")
+async def session_message(request: Request):
+    mensagem = request.session.pop("mensagem", None)
+    return JSONResponse(content={"mensagem": mensagem})
+
 
 Mangum(app)
