@@ -103,16 +103,34 @@
       <span style="display: block; margin-bottom: 15px;">R$ {{ '%.2f'|format(total_dinheiro) }}</span>
 
       <form action="/pagar/pontos" method="post" style="margin-bottom: 10px;">
-        <button type="submit" style="font-size: 17px; width: 100%; padding: 20px; background-color: #0077cc; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer;">
+        <input type="hidden" name="pontos_gastos" value="{{ total_pontos | int }}">
+        <button type="submit"
+          {% if total_pontos == 0 %}
+            disabled
+            style="opacity: 0.6; cursor: not-allowed; font-size: 17px; width: 100%; padding: 20px; background-color: #0077cc; color: white; border: none; border-radius: 5px; font-weight: 600;"
+          {% else %}
+            style="font-size: 17px; width: 100%; padding: 20px; background-color: #0077cc; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer;"
+          {% endif %}
+        >
           Pagar com Pontos
         </button>
       </form>
 
       <form action="/pagar/dinheiro" method="post">
-        <button type="submit" style="font-size: 17px; width: 100%; padding: 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer;">
+        <input type="hidden" name="total_dinheiro" value="{{ total_dinheiro }}">
+        <input type="hidden" name="pontos_gerados" value="{{ total_dinheiro | int }}">
+        <button type="submit"
+          {% if total_dinheiro == 0 %}
+            disabled
+            style="opacity: 0.6; cursor: not-allowed; font-size: 17px; width: 100%; padding: 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-weight: 600;"
+          {% else %}
+            style="font-size: 17px; width: 100%; padding: 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer;"
+          {% endif %}
+        >
           Pagar com Dinheiro
         </button>
       </form>
+
     </div>
     </div>
     <script src="/static/js/script.js"></script>

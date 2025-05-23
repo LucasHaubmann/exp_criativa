@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pagamento - PointBack</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/static/css/compra_dinheiro.css" />
+    <link
+      rel="shortcut icon"
+      href="/static/imagens/pb icon.png"
+      type="image/x-icon"
+    />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="button-container">
+      <button type="button" onclick="window.location.href='/carrinho'" class="add-product-btn">Voltar</button>
+    </div>
+
+    <div class="pagamento-dinheiro-container">
+      <h1 class="titulo-pagamento">Escolha a forma de pagamento</h1>
+
+      <div class="valor-total">
+        <p><strong>Total:</strong> R$ {{ '%.2f'|format(total_dinheiro) }}</p>
+        <p><strong>Pontos a receber:</strong> {{ pontos_gerados }}</p>
+      </div>
+
+      <div class="formas-pagamento">
+        <div class="opcao-pagamento" onclick="mostrarOpcao('pix')">
+          <i data-lucide="qr-code"></i>
+          <span>PIX</span>
+        </div>
+        <div class="opcao-pagamento" onclick="mostrarOpcao('boleto')">
+          <i data-lucide="file-text"></i>
+          <span>Boleto</span>
+        </div>
+        <div class="opcao-pagamento" onclick="mostrarOpcao('cartao')">
+          <i data-lucide="credit-card"></i>
+          <span>Cartão</span>
+        </div>
+      </div>
+
+      <div id="pix" class="pagamento-detalhe hidden">
+        <h2>Pague com PIX</h2>
+        <p>Escaneie o QR Code abaixo ou copie a chave:</p>
+        <img src="/static/imagens/qrcode-exemplo.png" alt="QR Code PIX" class="qrcode">
+        <p class="chave-pix">Chave PIX: pagamentos@pointback.com</p>
+      </div>
+
+      <div id="boleto" class="pagamento-detalhe hidden">
+        <h2>Boleto Bancário</h2>
+        <p>Geramos um boleto para pagamento. Clique abaixo para baixar:</p>
+        <button class="btn-pagamento">Gerar Boleto</button>
+      </div>
+
+      <div id="cartao" class="pagamento-detalhe hidden">
+        <h2>Cartão de Crédito</h2>
+        <form class="form-cartao">
+          <label for="nome">Nome no Cartão:</label>
+          <input type="text" id="nome" name="nome" required />
+
+          <label for="numero">Número do Cartão:</label>
+          <input type="text" id="numero" name="numero" maxlength="19" required />
+
+          <div class="cartao-row">
+            <div>
+              <label for="validade">Validade:</label>
+              <input type="text" id="validade" name="validade" placeholder="MM/AA" required />
+            </div>
+            <div>
+              <label for="cvv">CVV:</label>
+              <input type="text" id="cvv" name="cvv" maxlength="4" required />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-pagamento">Finalizar Pagamento</button>
+        </form>
+      </div>
+      <div id="mensagem-pagamento" class="mensagem-pagamento hidden">
+        <p>✅ Pagamento efetuado com sucesso!</p>
+        <button onclick="window.location.href='/'" class="btn-voltar">Voltar para tela principal</button>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+
+            function bloquearOpcoes() {
+        document.querySelectorAll('.opcao-pagamento').forEach(div => {
+          div.style.pointerEvents = 'none';  // bloqueia clique
+          div.style.opacity = '0.6';          // deixa visualmente "desabilitado"
+        });
+      }
+
+      function mostrarOpcao(opcao) {
+        document.querySelectorAll('.pagamento-detalhe').forEach(div => {
+          div.classList.add('hidden');
+        });
+        document.getElementById(opcao).classList.remove('hidden');
+
+        bloquearOpcoes(); // bloqueia todas as opções após selecionar uma
+      }
+
+      // Função para simular o pagamento e registrar no backend
+      async function simularPagamento() {
+        const mensagem = document.getElementById("mensagem-pagamento");
+        mensagem.classList.add("hidden"); // Esconde antes de mostrar de novo
+
+        // Pegue os pontos gerados da variável do template (injetada no HTML)
+        const pontosGerados = {{ pontos_gerados }};
+
+        try {
+          const response = await fetch("/registrar_pagamento", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ pontos_gerados: pontosGerados })
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.status === "sucesso") {
+            mensagem.querySelector("p").textContent = "✅ Pagamento efetuado com sucesso!";
+          } else {
+            mensagem.querySelector("p").textContent = "❌ Erro ao efetuar pagamento: " + (data.mensagem || "Erro desconhecido");
+          }
+        } catch (error) {
+          mensagem.querySelector("p").textContent = "❌ Erro na comunicação com o servidor.";
+          console.error(error);
+        }
+
+        // Mostrar mensagem após 1 segundo (ou ajuste o tempo que quiser)
+        setTimeout(() => {
+          mensagem.classList.remove("hidden");
+        }, 1000);
+      }
+
+      // Adiciona evento aos botões PIX e Boleto para simular o pagamento
+      document.querySelector(".opcao-pagamento[onclick*='pix']").addEventListener("click", simularPagamento);
+      document.querySelector(".opcao-pagamento[onclick*='boleto']").addEventListener("click", simularPagamento);
+
+      // Adiciona evento ao formulário do Cartão
+      document.querySelector(".form-cartao").addEventListener("submit", function (e) {
+        e.preventDefault(); // Evita envio real
+        simularPagamento();
+      });
+    </script>
+
+
+
+  </body>
+</html>

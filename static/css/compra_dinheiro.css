@@ -1,0 +1,164 @@
+body {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 35vh;
+  margin: 0;
+}
+
+.button-container {
+    margin-left: 10px;
+    padding: 25px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.button-container button {
+    background-color: #026773;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    margin-left: 20px;
+    font-weight: bold;
+}
+
+.pagamento-dinheiro-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.titulo-pagamento {
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+}
+
+.valor-total {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.6rem;
+}
+
+.formas-pagamento {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 2rem;
+}
+
+.opcao-pagamento {
+  cursor: pointer;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.opcao-pagamento:hover {
+  background: #f0f0f0;
+}
+
+.opcao-pagamento i {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 0.5rem;
+}
+
+.pagamento-detalhe {
+  display: none;
+}
+
+.pagamento-detalhe h2{
+  color: black;
+}
+
+.pagamento-detalhe:not(.hidden) {
+  display: block;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.qrcode {
+  width: 180px;
+  display: block;
+  margin: 1rem auto;
+}
+
+.chave-pix {
+  text-align: center;
+  font-weight: bold;
+}
+
+.form-cartao input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.cartao-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-pagamento {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-pagamento:hover {
+  background-color: #0056b3;
+}
+
+.mensagem-pagamento {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #d4edda;
+  color: #155724;
+  font-weight: 600;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  text-align: center;
+  animation: fadein 1s ease-in;
+}
+
+
+.btn-voltar {
+  margin-top: 15px;
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-voltar:hover {
+  background-color: #45a049;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

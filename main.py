@@ -2,7 +2,7 @@ import pymysql
 import base64
 from mangum import Mangum
 from fastapi import FastAPI, Request, Form, Depends, UploadFile, File, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, RedirectResponse, Response, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
@@ -340,7 +340,22 @@ def adicionar_carrinho(
     return RedirectResponse("/carrinho", status_code=303)
 
 
+def limpar_carrinho(user_id: int, db):
+    with db.cursor() as cursor:
+        # Pega o ID do carrinho do usuário
+        cursor.execute("SELECT ID FROM carrinho WHERE id_comprador = %s", (user_id,))
+        carrinho = cursor.fetchone()
 
+        if carrinho:
+            id_carrinho = carrinho[0]
+
+            # Apaga os produtos vinculados ao carrinho
+            cursor.execute("DELETE FROM produto_carrinho WHERE id_carrinho = %s", (id_carrinho,))
+
+            # Apaga o carrinho
+            cursor.execute("DELETE FROM carrinho WHERE ID = %s", (id_carrinho,))
+
+            db.commit()
 
 @app.get("/carrinho", response_class=HTMLResponse)
 async def ver_carrinho(request: Request):
@@ -349,34 +364,32 @@ async def ver_carrinho(request: Request):
     if not user:
         return RedirectResponse(url="/cadastro", status_code=303)
 
-    conn = pymysql.connect(
-        host="localhost", user="root", password="6540", database="pointback"
-    )
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
-
-    cursor.execute("SELECT ID FROM carrinho WHERE id_comprador = %s", (user["id"],))
-    carrinho = cursor.fetchone()
-
     produtos = []
 
-    if carrinho:
-        id_carrinho = carrinho["ID"]
+    try:
+        db = get_db()
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("SELECT ID FROM carrinho WHERE id_comprador = %s", (user["id"],))
+            carrinho = cursor.fetchone()
 
-        cursor.execute("""
-            SELECT 
-                p.ID, p.nome, p.modelo, p.marca, p.categoria, 
-                p.pontos, p.preco, pc.quantidade
-            FROM produto_carrinho pc
-            JOIN produto p ON pc.id_produto = p.ID
-            WHERE pc.id_carrinho = %s
-        """, (id_carrinho,))
-        produtos = cursor.fetchall()
+            if carrinho:
+                id_carrinho = carrinho["ID"]
 
-        # Adiciona a URL da imagem em cada produto
-        for produto in produtos:
-            produto["imagem_url"] = f"/imagem/{produto['ID']}"
+                cursor.execute("""
+                    SELECT 
+                        p.ID, p.nome, p.modelo, p.marca, p.categoria, 
+                        p.pontos, p.preco, pc.quantidade
+                    FROM produto_carrinho pc
+                    JOIN produto p ON pc.id_produto = p.ID
+                    WHERE pc.id_carrinho = %s
+                """, (id_carrinho,))
+                produtos = cursor.fetchall()
 
-    conn.close()
+                for produto in produtos:
+                    produto["imagem_url"] = f"/imagem/{produto['ID']}"
+
+    finally:
+        db.close()
 
     total_pontos = sum(p["pontos"] * p["quantidade"] for p in produtos if p["pontos"])
     total_dinheiro = sum(p["preco"] * p["quantidade"] for p in produtos if p["preco"])
@@ -390,6 +403,78 @@ async def ver_carrinho(request: Request):
     })
 
 
+
+@app.post("/pagar/pontos", response_class=HTMLResponse)
+async def pontos(request: Request, pontos_gastos: int = Form(...)):
+    usuario = get_user_from_session(request)
+    return templates.TemplateResponse("compra_pontos.html", {
+        "request": request,
+        "pontos_gastos": pontos_gastos,
+        "pontos_usuario": usuario["pontos"]
+    })
+
+
+@app.post("/confirmar_pagamento_pontos")
+async def confirmar_pagamento_pontos(
+    request: Request,
+    pontos_gastos: int = Form(...),
+    db=Depends(get_db)
+):
+    try:
+        user = get_user_from_session(request)
+        if not user:
+            return JSONResponse(status_code=401, content={"status": "erro", "mensagem": "Usuário não autenticado"})
+
+        with db.cursor() as cursor:
+            cursor.execute(
+                "UPDATE usuario SET pontos = pontos - %s WHERE id = %s AND pontos >= %s",
+                (pontos_gastos, user["id"], pontos_gastos)
+            )
+
+            db.commit()
+            limpar_carrinho(user["id"], db)
+        return JSONResponse(content={"status": "sucesso", "mensagem": "Pontos descontados com sucesso!"})
+
+    except Exception as e:
+        print(f"Erro ao descontar pontos: {e}")
+        return JSONResponse(status_code=500, content={"status": "erro", "mensagem": "Erro no servidor"})
+
+
+@app.post("/pagar/dinheiro", response_class=HTMLResponse)
+async def dinheiro(
+    request: Request,
+    total_dinheiro: float = Form(...),
+    pontos_gerados: int = Form(...)
+):
+    return templates.TemplateResponse("compra_dinheiro.html", {
+        "request": request,
+        "total_dinheiro": total_dinheiro,
+        "pontos_gerados": pontos_gerados
+    })
+
+
+@app.post("/registrar_pagamento")
+async def registrar_pagamento(
+    request: Request,
+    pontos_gerados: int = Form(...),
+    db=Depends(get_db)
+):
+    try:
+        user = get_user_from_session(request)
+        if not user:
+            return JSONResponse(status_code=401, content={"status": "erro", "mensagem": "Usuário não autenticado"})
+
+        with db.cursor() as cursor:
+            cursor.execute(
+                "UPDATE usuario SET pontos = pontos + %s WHERE ID = %s",
+                (pontos_gerados, user["id"])
+            )
+            db.commit()
+            limpar_carrinho(user["id"], db)
+        return JSONResponse(content={"status": "sucesso", "mensagem": "Pagamento efetuado com sucesso!"})
+    except Exception as e:
+        print(f"Erro ao registrar pagamento: {e}")
+        return JSONResponse(status_code=500, content={"status": "erro", "mensagem": "Erro no servidor"})
 
 
 @app.get("/imagem/{produto_id}")

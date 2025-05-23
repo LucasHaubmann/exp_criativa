@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pagamento com Pontos - PointBack</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/static/css/compra_dinheiro.css" />
+    <link rel="shortcut icon" href="/static/imagens/pb icon.png" type="image/x-icon" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      body {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .button-container {
+        padding: 20px;
+      }
+
+      .pagamento-dinheiro-container {
+        max-width: 480px;
+        margin: 60px auto;
+        padding: 40px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        text-align: center;
+      }
+
+      .pagamento-dinheiro-container h1 {
+        font-size: 2rem;
+        color: #0077cc;
+        margin-bottom: 20px;
+      }
+
+      .pagamento-dinheiro-container img {
+        height: 29px;
+      }
+
+      .info-pontos p {
+        font-size: 18px;
+        color: #333;
+        margin: 10px 0;
+      }
+
+      .info-pontos p strong {
+        color: #000;
+      }
+
+      .mensagem-erro {
+        background-color: #ffe5e5;
+        border: 1px solid #d9534f;
+        color: #d9534f;
+        padding: 12px;
+        border-radius: 6px;
+        font-weight: bold;
+        margin: 25px 0;
+      }
+
+      .btn-confirmar, .btn-voltar {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-bottom: 15px;
+      }
+
+      .btn-confirmar {
+        background-color: #0077cc;
+        color: white;
+      }
+
+      .btn-confirmar:disabled {
+        background-color: #a8c9e8;
+        cursor: not-allowed;
+      }
+
+      .btn-voltar {
+        background-color: #f0f0f0;
+        color: #333;
+      }
+
+      .btn-voltar:hover {
+        background-color: #e2e2e2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="button-container">
+      <button type="button" onclick="window.location.href='/carrinho'" class="add-product-btn">Voltar</button>
+    </div>
+
+    <div class="pagamento-dinheiro-container">
+      <div style="display: flex; justify-content: center; align-items: center; ">
+        <img src="../../static/imagens/p-red-icon.png" alt="">
+        <h1>Pagamento com Pontos</h1>
+        <img src="../../static/imagens/p-red-icon.png" alt="">
+      </div>
+
+      <div class="info-pontos">
+        <p><strong>Pontos necessários:</strong> {{ pontos_gastos }}</p>
+        <p><strong>Seus pontos:</strong> {{ pontos_usuario }}</p>
+      </div>
+
+      {% if pontos_usuario < pontos_gastos %}
+        <p class="mensagem-erro">❌ Você não tem pontos suficientes para essa compra.</p>
+      {% endif %}
+
+      <button type="button"
+              id="btn-confirmar-pontos"
+              class="btn-confirmar"
+              {% if pontos_usuario < pontos_gastos %}disabled{% endif %}>
+        Confirmar Pagamento com Pontos
+      </button>
+      <div id="mensagem-pagamento" class="mensagem-pagamento hidden">
+        <p></p>
+        <button onclick="window.location.href='/'" class="btn-voltar">Voltar para tela principal</button>
+      </div>
+    </div>
+    <div id="mensagem-pagamento" class="mensagem-pagamento hidden">
+  <p></p>
+  <button onclick="window.location.href='/'" class="btn-voltar">Voltar para tela principal</button>
+
+</div>
+
+    <script>
+      lucide.createIcons();
+
+      const btnConfirmar = document.getElementById("btn-confirmar-pontos");
+      const mensagem = document.getElementById("mensagem-pagamento");
+      const pontosGastos = {{ pontos_gastos }};
+
+      btnConfirmar?.addEventListener("click", async function () {
+        mensagem.classList.add("hidden");
+
+        // Desativa o botão após o primeiro clique
+        btnConfirmar.disabled = true;
+
+        try {
+          const response = await fetch("/confirmar_pagamento_pontos", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ pontos_gastos: pontosGastos })
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.status === "sucesso") {
+            mensagem.querySelector("p").textContent = "✅ Pagamento com pontos efetuado com sucesso!";
+          } else {
+            mensagem.querySelector("p").textContent = "❌ Erro: " + (data.mensagem || "Erro desconhecido.");
+            btnConfirmar.disabled = false; // Reativa o botão em caso de erro
+          }
+        } catch (error) {
+          console.error(error);
+          mensagem.querySelector("p").textContent = "❌ Erro na comunicação com o servidor.";
+          btnConfirmar.disabled = false; // Reativa o botão em caso de exceção
+        }
+
+        setTimeout(() => {
+          mensagem.classList.remove("hidden");
+        }, 100);
+      });
+    </script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
