@@ -1,70 +1,56 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const menuBtn = document.getElementById("menu-btn");
-  const closeBtn = document.getElementById("close-btn");
-  const sidebar = document.getElementById("sidebar");
+// ✅ Pré-visualização da foto
+const fotoInput = document.getElementById('foto');
+const fotoPerfil = document.getElementById('foto-perfil');
 
-  menuBtn.addEventListener("click", function () {
-    sidebar.classList.add("active");
-  });
-
-  closeBtn.addEventListener("click", function () {
-    sidebar.classList.remove("active");
-  });
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const userIcon = document.querySelector(".user-icon");
-  const userMenu = document.getElementById("user-menu");
-
-  userIcon.addEventListener("click", (event) => {
-    event.stopPropagation();
-
-    userMenu.style.display =
-      userMenu.style.display === "block" ? "none" : "block";
-  });
-
-  document.addEventListener("click", (event) => {
-    if (!userIcon.contains(event.target) && !userMenu.contains(event.target)) {
-      userMenu.style.display = "none";
+fotoInput.addEventListener('change', function () {
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      fotoPerfil.src = e.target.result;
     }
-  });
+    reader.readAsDataURL(file);
+  }
 });
 
-function redirectTo(url) {
-  window.location.href = url;
+// ✅ Toast
+function showToast(message, isSuccess = false) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.className = "toast show";
+  if (isSuccess) toast.classList.add("success");
+
+  setTimeout(() => {
+    toast.classList.remove("show", "success");
+  }, 3000);
 }
 
+// ✅ Regex e validação
 const regex = {
   nome: /^(?!\s*$)[a-zA-ZÀ-ÿ\s]{3,}$/,
-  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  senha: /^.{6,}$/,
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 };
 
-function validarCPF(cpf) {
-  const cleaned = cpf.replace(/\D/g, "");
-  if (cleaned.length !== 11 || /^(\d)\1+$/.test(cleaned)) return false;
-  let soma = 0;
-  for (let i = 0; i < 9; i++) soma += parseInt(cleaned.charAt(i)) * (10 - i);
-  let resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  if (resto !== parseInt(cleaned.charAt(9))) return false;
-  soma = 0;
-  for (let i = 0; i < 10; i++) soma += parseInt(cleaned.charAt(i)) * (11 - i);
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  return resto === parseInt(cleaned.charAt(10));
-}
-
 function validarDataNascimento(dataStr) {
-  const [dia, mes, ano] = dataStr.split("/").map(Number);
+  const [dia, mes, ano] = dataStr.split('/').map(Number);
   if (!dia || !mes || !ano || String(ano).length !== 4) return "Data inválida.";
+
   const data = new Date(ano, mes - 1, dia);
   const hoje = new Date();
+
   if (data > hoje) return "Data não pode ser futura.";
-  if (ano > 2025) return "Ano inválido.";
+  if (ano > 2025 || (ano === 2025 && mes > hoje.getMonth() + 1)) return "Ano/mês não pode ultrapassar 2025.";
+
   const idade = hoje.getFullYear() - ano;
-  if (idade < 18) return "É necessário ter pelo menos 18 anos.";
-  if (idade > 100) return "Idade máxima permitida: 100 anos.";
+  const aniversarioJaPassou = (mes < hoje.getMonth() + 1) || (mes === hoje.getMonth() + 1 && dia <= hoje.getDate());
+  const idadeExata = aniversarioJaPassou ? idade : idade - 1;
+
+  if (idadeExata < 18) return "É necessário ter pelo menos 18 anos.";
+  if (idadeExata > 100) return "Idade máxima permitida: 100 anos.";
+  if (mes > 12) return "Mês inválido.";
+  if (dia > 31) return "Dia inválido.";
   return "";
 }
 
@@ -72,14 +58,10 @@ function validateField(name, value) {
   switch (name) {
     case "nome":
       return regex.nome.test(value) ? "" : "Nome inválido.";
-    case "cpf":
-      return validarCPF(value) ? "" : "CPF inválido.";
-    case "dataNascimento":
-      return validarDataNascimento(value);
     case "email":
       return regex.email.test(value) ? "" : "Email inválido.";
-    case "senha":
-      return regex.senha.test(value) ? "" : "Senha muito curta.";
+    case "dataNascimento":
+      return validarDataNascimento(value);
     default:
       return "";
   }
@@ -90,11 +72,7 @@ function showError(field, message) {
   const input = document.querySelector(`[name="${field}"]`);
 
   if (input) {
-    if (message) {
-      input.classList.add("erro-campo");
-    } else {
-      input.classList.remove("erro-campo");
-    }
+    input.classList.toggle("erro-campo", !!message);
   }
 
   if (el) {
@@ -103,84 +81,66 @@ function showError(field, message) {
   }
 }
 
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  if (!toast) return;
-  toast.textContent = message;
-  toast.classList.add("show");
-  setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3000);
-}
-
-function aplicarMascaraCPF(input) {
-  input.addEventListener("input", function () {
-    let value = input.value.replace(/\D/g, "").slice(0, 11);
-    value = value.replace(/(\d{3})(\d)/, "$1.$2");
-    value = value.replace(/(\d{3})(\d)/, "$1.$2");
-    value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-    input.value = value;
-  });
-}
-
-function aplicarMascaraData(input) {
-  input.addEventListener("input", function () {
-    let value = input.value.replace(/\D/g, "").slice(0, 8);
-    if (value.length >= 3) value = value.replace(/(\d{2})(\d{1,2})/, "$1/$2");
-    if (value.length >= 6)
-      value = value.replace(/(\d{2}\/\d{2})(\d{1,4})/, "$1/$2");
-    input.value = value;
-  });
-}
-
-function setupValidation(formId, fields) {
-  const form = document.getElementById(formId);
-  if (!form) return;
-
+function setupValidationPerfil(form, fields) {
   fields.forEach((field) => {
     const input = form.querySelector(`[name="${field}"]`);
     if (!input) return;
 
+    input.addEventListener("blur", () => {
+      const msg = validateField(field, input.value.trim());
+      showError(field, msg);
+    });
+
     input.addEventListener("input", () => {
-      const value = input.value.trim();
-      const error = validateField(field, value);
-      showError(field, error);
+      const msg = validateField(field, input.value.trim());
+      showError(field, msg);
     });
   });
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const camposInvalidos = [];
 
-    fields.forEach((field) => {
+    const invalid = fields.filter(field => {
       const input = form.querySelector(`[name="${field}"]`);
-      const value = input.value.trim();
-      const error = validateField(field, value);
-      if (!value || error) {
-        camposInvalidos.push(field);
-        showError(field, error);
-      }
+      const msg = validateField(field, input.value.trim());
+      showError(field, msg);
+      return msg;
     });
 
-    if (camposInvalidos.length > 0) {
-      showToast("Corrija os campos em destaque.");
+    if (invalid.length) {
+      showToast("Por favor, corrija os campos destacados.");
       return;
     }
 
-    fetch("/editar_usuario", {
-      method: "POST",
-      body: new FormData(form),
-    })
-      .then((response) => {
-        if (response.ok) {
-          window.location.href = "/perfil";
+    const formData = new FormData(form);
+    fetch(form.action, { method: "POST", body: formData })
+      .then(res => {
+        if (res.ok) {
+          showToast("Atualizado com sucesso!", true);
+          setTimeout(() => window.location.href = '/perfil', 1000);
         } else {
           showToast("Erro ao enviar. Tente novamente.");
         }
       })
-      .catch((error) => {
-        console.error("Erro:", error);
-        showToast("Erro no servidor.");
-      });
+      .catch(() => showToast("Erro de rede."));
   });
 }
+
+// ✅ Máscara de data
+function aplicarMascaraData(input) {
+  input.addEventListener("input", function () {
+    let value = input.value.replace(/\D/g, "").slice(0, 8);
+    if (value.length >= 3) value = value.replace(/(\d{2})(\d{1,2})/, "$1/$2");
+    if (value.length >= 6) value = value.replace(/(\d{2}\/\d{2})(\d{1,4})/, "$1/$2");
+    input.value = value;
+  });
+}
+
+// ✅ Inicialização
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("perfil-form");
+  const dataInput = form.querySelector("input[name='dataNascimento']");
+  if (dataInput) aplicarMascaraData(dataInput);
+
+  setupValidationPerfil(form, ["nome", "dataNascimento", "email"]);
+});

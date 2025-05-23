@@ -18,11 +18,12 @@ app.add_middleware(SessionMiddleware, secret_key="123456")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
+templates.env.filters['b64encode'] = lambda b: base64.b64encode(b).decode('utf-8') if b else ''
 
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "6540",
+    "password": "1234567",
     "database": "pointback"
 }
 
@@ -35,22 +36,22 @@ def get_db():
 def is_user_logged_in(request: Request) -> bool:
     return "user_id" in request.session
 
-
 def get_user_from_session(request: Request):
-    # retorna o usuario se encontrado, com base no user_id fornecido
     user_id = request.session.get("user_id")
     if not user_id:
+        print("⚠️ Nenhum usuário na sessão.")
         return None
 
     db = get_db()
     try:
         with db.cursor() as cursor:
             cursor.execute(
-                "SELECT nome, cpf, dt_Nasc, email, pontos, tipo FROM usuario WHERE ID = %s",
+                "SELECT nome, cpf, dt_Nasc, email, pontos, tipo, foto FROM usuario WHERE ID = %s",
                 (user_id,)
             )
             row = cursor.fetchone()
             if row:
+                print(f"✅ Foto carregada do banco: {'sim' if row[6] else 'não'}")
                 user = {
                     "id": user_id,
                     "nome": row[0],
@@ -58,14 +59,15 @@ def get_user_from_session(request: Request):
                     "dt_nasc": row[2],
                     "email": row[3],
                     "pontos": row[4],
-                    "admin": row[5] == 'admin'
+                    "admin": row[5] == 'admin',
+                    "foto": row[6]
                 }
                 return user
+            else:
+                print("⚠️ Usuário não encontrado no banco.")
     finally:
         db.close()
     return None
-
-
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request, db=Depends(get_db)):
@@ -142,7 +144,11 @@ async def cadastrar_usuario(
                 return RedirectResponse(url="/", status_code=303)
 
             # insere o usuario no banco de dados
-            sql = "INSERT INTO usuario (nome, cpf, dt_Nasc, email, senha, tipo) VALUES (%s, %s, %s, %s, %s, %s)"
+            with open("static/imagens/default-profile.png", "rb") as f:
+                default_foto = f.read()
+
+            sql = "INSERT INTO usuario (nome, cpf, dt_Nasc, email, senha, tipo, foto) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql, (nome, cpf, dt_nasc_obj, email, senha_hash, "usuario", default_foto))
             senha_bytes = senha.encode('utf-8')  # Converte a senha para bytes
             salt = bcrypt.gensalt()  #gera salt aleatório
             senha_hash = bcrypt.hashpw(senha_bytes, salt)  # Gera o hash da senha
@@ -594,45 +600,58 @@ async def editar_usuario(
     nome: str = Form(...),
     dataNascimento: str = Form(...),
     email: str = Form(...),
-    db=Depends(get_db)
+    foto: UploadFile = File(None),
+    db = Depends(get_db)
 ):
     user_id = request.session.get("user_id")
+    print("➡️ Recebendo dados no /editar_usuario")
+
     if not user_id:
+        print("❌ Usuário não autenticado.")
         raise HTTPException(status_code=401, detail="Usuário não autenticado.")
 
     try:
         dt_nasc_obj = datetime.strptime(dataNascimento, "%d/%m/%Y").date()
     except ValueError:
-        request.session["nao_autenticado"] = True
-        request.session["mensagem_header"] = "Editar Perfil"
-        request.session["mensagem"] = "Erro: Formato de data inválido."
-        return RedirectResponse(url="/", status_code=303)
+        print("❌ Data de nascimento inválida.")
+        return RedirectResponse(url="/perfil", status_code=303)
 
     try:
         with db.cursor() as cursor:
-            sql = """
-                UPDATE usuario
-                SET nome = %s,
-                    dt_Nasc = %s,
-                    email = %s
-                WHERE ID = %s
-            """
-            cursor.execute(sql, (nome, dt_nasc_obj, email, user_id))
+            print("➡️ Atualizando usuário com ou sem foto...")
+            if foto and foto.filename:
+                print(f"✅ Foto recebida: {foto.filename}")
+                foto_bytes = await foto.read()
+                print(f"✅ Tamanho da foto recebida: {len(foto_bytes)} bytes")
+
+                sql = """
+                    UPDATE usuario
+                    SET nome = %s,
+                        dt_Nasc = %s,
+                        email = %s,
+                        foto = %s
+                    WHERE ID = %s
+                """
+                cursor.execute(sql, (nome, dt_nasc_obj, email, foto_bytes, user_id))
+            else:
+                print("⚠️ Nenhuma foto enviada.")
+                sql = """
+                    UPDATE usuario
+                    SET nome = %s,
+                        dt_Nasc = %s,
+                        email = %s
+                    WHERE ID = %s
+                """
+                cursor.execute(sql, (nome, dt_nasc_obj, email, user_id))
+
             db.commit()
-
-            request.session["mensagem_header"] = "Editar Perfil"
-            request.session["mensagem"] = "Perfil atualizado com sucesso!"
-            return RedirectResponse(url="/", status_code=303)
-
+            print("✅ Atualização feita com sucesso no banco.")
+        return RedirectResponse(url="/perfil", status_code=303)
     except Exception as e:
-        request.session["mensagem_header"] = "Editar Perfil"
-        request.session["mensagem"] = f"Erro ao atualizar: {str(e)}"
-        print(f"Erro ao atualizar: {str(e)}")
-        return RedirectResponse(url="/", status_code=303)
-
+        print(f"❌ Erro ao atualizar: {str(e)}")
+        return RedirectResponse(url="/perfil", status_code=303)
     finally:
         db.close()
-
 
 @app.get("/tela_compra", response_class=HTMLResponse)
 async def tela_compra(request: Request):

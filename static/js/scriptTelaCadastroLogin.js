@@ -35,6 +35,8 @@ function validarDataNascimento(dataStr) {
 
   if (idadeExata < 18) return "É necessário ter pelo menos 18 anos.";
   if (idadeExata > 100) return "Idade máxima permitida: 100 anos.";
+  if (mes > 12) return "Mês inválido.";
+  if (dia > 31) return "Dia inválido.";
 
   return "";
 }
