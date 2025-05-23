@@ -47,7 +47,13 @@
         <span class="user-name">{{ user.pontos }} Pontos</span>
       </div>
       {% endif %}
-      <i data-lucide="user-circle" class="custom-icon"></i>
+      <div class="icon-wrapper user-icon">
+        {% if user.foto %}
+          <img src="data:image/jpeg;base64,{{ user.foto | b64encode }}" alt="Foto de Perfil" class="foto-header">
+        {% else %}
+          <i data-lucide="user-circle" class="custom-icon"></i>
+        {% endif %}
+      </div>
     </div>
 
     <div class="user-menu" id="user-menu">

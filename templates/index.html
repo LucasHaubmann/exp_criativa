@@ -17,66 +17,78 @@
       />
     </head>
     <body>
-      <div>
-      <nav class="sidebar" id="sidebar">
-        <button class="close-btn" id="close-btn">&times;</button>
-        <ul>
-          <li><a href="/promocoes">PROMOÇÕES</a></li>
-          <li><a href="/hardware">HARDWARE</a></li>
-          <li><a href="/notebooks">NOTEBOOKS</a></li>
-          <li><a href="/monitores">MONITORES</a></li>
-          <li><a href="/monteseupc">MONTE SEU PC</a></li>
-          <li><a href="/atendimento">ATENDIMENTO</a></li>
-        </ul>
-      </nav>
 
-        <header class="header">
-        <div class="icon-wrapper icon-sidebar">
-          <i data-lucide="menu" id="menu-btn" class="custom-icon"></i>
-        </div>
-         <a href="/"><img src="../static/imagens/Point_Back_LogoAzul.png" alt="" /></a>
-        <div class="icon-wrapper user-icon">
-          {% if user %}
-          <div class="user-info">
-            <span class="user-name">{{user.nome}}</span>
-            <span class="user-name">{{user.pontos}} Pontos</span>
-          </div>
-          {% endif %}
+  <!-- ✅ Toast para mensagens -->
+  <div id="toast" class="toast"></div>
+
+  <!-- ✅ Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <button class="close-btn" id="close-btn">&times;</button>
+    <ul>
+      <li><a href="/promocoes">PROMOÇÕES</a></li>
+      <li><a href="/hardware">HARDWARE</a></li>
+      <li><a href="/notebooks">NOTEBOOKS</a></li>
+      <li><a href="/monitores">MONITORES</a></li>
+      <li><a href="/monteseupc">MONTE SEU PC</a></li>
+      <li><a href="/atendimento">ATENDIMENTO</a></li>
+    </ul>
+  </nav>
+
+  <!-- ✅ Header -->
+  <header class="header">
+    <div class="icon-wrapper icon-sidebar">
+      <i data-lucide="menu" id="menu-btn" class="custom-icon"></i>
+    </div>
+    <a href="/"><img src="../static/imagens/Point_Back_LogoAzul.png" alt="Logo" /></a>
+
+    <div class="icon-wrapper user-icon">
+      {% if user %}
+      <div class="user-info">
+        <span class="user-name">{{ user.nome }}</span>
+        <span class="user-name">{{ user.pontos }} Pontos</span>
+      </div>
+      {% endif %}
+      <div class="icon-wrapper user-icon">
+        {% if user.foto %}
+          <img src="data:image/jpeg;base64,{{ user.foto | b64encode }}" alt="Foto de Perfil" class="foto-header">
+        {% else %}
           <i data-lucide="user-circle" class="custom-icon"></i>
-        </div>
-        <div class="user-menu" id="user-menu">
-          <ul>
-            {% if user %}
-            <li><p>Seus pontos: {{ user.pontos }}</p></li>
-            <li><a href="/perfil">Meu perfil</a></li>
-            <li><a href="/meus-pedidos">Meus pedidos</a></li>
-            <li><a href="/favoritos">Lista de desejos</a></li>
-            <li><a href="/carrinho">Carrinho</a></li>
-            <li><a href="/inventario">Perfil vendedor</a></li>
-
-            {% if user.admin %}
-            <li><a href="/adm/usuarios">Gerenciar usuários</a></li>
-            {% endif %}
-
-            <li><a href="/logout" id="logout">Sair</a></li>
-            {% else %}
-            <li><a href="/cadastro">Entrar</a></li>
-            <li><a href="/cadastro">Cadastrar</a></li>
-            {% endif %}
-          </ul>
-        </div>
-      </header>
-      <div class="header-menu">
-        <ul class="header-menu-list">
-          <li><a href="/promocoes">PROMOÇÕES</a></li>
-          <li><a href="/hardware">HARDWARE</a></li>
-          <li><a href="/notebooks">NOTEBOOKS</a></li>
-          <li><a href="/monitores">MONITORES</a></li>
-          <li><a href="/monteseupc">MONTE SEU PC</a></li>
-          <li><a href="/atendimento">ATENDIMENTO</a></li>
-        </ul>
+        {% endif %}
       </div>
-      </div>
+    </div>
+
+    <div class="user-menu" id="user-menu">
+      <ul>
+        {% if user %}
+          <li><p>Seus pontos: {{ user.pontos }}</p></li>
+          <li><a href="/perfil">Meu perfil</a></li>
+          <li><a href="/meus-pedidos">Meus pedidos</a></li>
+          <li><a href="/favoritos">Lista de desejos</a></li>
+          <li><a href="/carrinho">Carrinho</a></li>
+          <li><a href="/inventario">Perfil vendedor</a></li>
+          {% if user.admin %}
+          <li><a href="/adm/usuarios">Gerenciar usuários</a></li>
+          {% endif %}
+          <li><a href="/logout" id="logout">Sair</a></li>
+        {% else %}
+          <li><a href="/cadastro">Entrar</a></li>
+          <li><a href="/cadastro">Cadastrar</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </header>
+
+  <!-- ✅ Menu superior -->
+  <div class="header-menu">
+    <ul class="header-menu-list">
+      <li><a href="/promocoes">PROMOÇÕES</a></li>
+      <li><a href="/hardware">HARDWARE</a></li>
+      <li><a href="/notebooks">NOTEBOOKS</a></li>
+      <li><a href="/monitores">MONITORES</a></li>
+      <li><a href="/monteseupc">MONTE SEU PC</a></li>
+      <li><a href="/atendimento">ATENDIMENTO</a></li>
+    </ul>
+  </div>
       <div class="img-center">
         <img src="../static/imagens/pointbackmenu.png" class="menu-img" alt="">
       </div>

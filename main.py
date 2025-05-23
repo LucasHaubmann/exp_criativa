@@ -39,7 +39,6 @@ def is_user_logged_in(request: Request) -> bool:
 def get_user_from_session(request: Request):
     user_id = request.session.get("user_id")
     if not user_id:
-        print("⚠️ Nenhum usuário na sessão.")
         return None
 
     db = get_db()
@@ -143,16 +142,16 @@ async def cadastrar_usuario(
                 request.session["mensagem"] = "Erro: Este CPF já está em uso!"
                 return RedirectResponse(url="/", status_code=303)
 
-            # insere o usuario no banco de dados
             with open("static/imagens/default-profile.png", "rb") as f:
                 default_foto = f.read()
 
+        # ✅ PRIMEIRO gera o hash!
+            senha_bytes = senha.encode('utf-8')  # Converte a senha para bytes
+            salt = bcrypt.gensalt()             # Gera salt aleatório
+            senha_hash = bcrypt.hashpw(senha_bytes, salt)  # Gera o hash da senha
+
             sql = "INSERT INTO usuario (nome, cpf, dt_Nasc, email, senha, tipo, foto) VALUES (%s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(sql, (nome, cpf, dt_nasc_obj, email, senha_hash, "usuario", default_foto))
-            senha_bytes = senha.encode('utf-8')  # Converte a senha para bytes
-            salt = bcrypt.gensalt()  #gera salt aleatório
-            senha_hash = bcrypt.hashpw(senha_bytes, salt)  # Gera o hash da senha
-            cursor.execute(sql, (nome, cpf, dt_nasc_obj, email, senha_hash, "usuario"))
 
             db.commit()
 

@@ -644,3 +644,20 @@ a {
   text-align: center;
 }
 
+.foto-header {
+  max-width: 50px;         /* ✅ largura fixa */
+  max-height: 50px;        /* ✅ altura fixa */
+  min-width: 50px;      
+  min-height: 50px;
+  border-radius: 50%;  /* ✅ redonda */
+  object-fit: cover;   /* ✅ preenche e corta excesso */
+  display: block;      
+  overflow: hidden;    /* ✅ esconde partes extras */
+}
+
+.icon-wrapper.user-icon img {
+  padding: 0;
+  margin: 0;
+  display: block;
+  width: 100%;
+}

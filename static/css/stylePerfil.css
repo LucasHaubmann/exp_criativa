@@ -144,3 +144,59 @@ input[readonly] {
   font-size: 12px;
   display: none;
 }
+
+.foto-header {
+  max-width: 50px;         /* ✅ largura fixa */
+  max-height: 50px;        /* ✅ altura fixa */
+  min-width: 50px;      
+  min-height: 50px;
+  border-radius: 50%;  /* ✅ redonda */
+  object-fit: cover;   /* ✅ preenche e corta excesso */
+  display: block;      
+  overflow: hidden;    /* ✅ esconde partes extras */
+}
+
+.icon-wrapper.user-icon img {
+  padding: 0;
+  margin: 0;
+  display: block;
+  width: 100%;
+}
+
+
+@media (max-width: 1200px) {
+  .perfil-grid {
+    grid-template-columns: 1fr; /* Empilha */
+    gap: 20px;
+    padding: 10px;
+  }
+
+  .grid-esquerda {
+    max-width: 100%;
+    width: 100%;
+    padding: 15px;
+  }
+
+  .grid-esquerda img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .grid-direita {
+    width: 100%;
+  }
+
+  .btn-salvar {
+    width: 100%;
+    text-align: center;
+  }
+
+  .icon-wrapper.user-icon img {
+  padding: 0;
+  margin: 0;
+  display: block;
+  width: 100%;
+  scale: .9;
+}
+
+}
