@@ -95,18 +95,18 @@
                     </div>
                 </div>
                 <div class="acoes-produto">
-                    <div>
+
+
+                    <form action="/carrinho/adicionar" method="post">
+                        <input type="hidden" name="id_produto" value="{{ produto.id }}">
+
                         <label for="quantidade" class="quantidade-text">Quantidade:</label>
                         <select id="quantidade" name="quantidade" class="quantidade-select">
                             {% for i in range(1, 11) %}
                                 <option value="{{ i }}">{{ i }}</option>
                             {% endfor %}
                         </select>
-                    </div>
 
-                    <form action="/carrinho/adicionar" method="post">
-                        <input type="hidden" name="id_produto" value="{{ produto.id }}">
-                        <input type="number" name="quantidade" value="1" min="1">
                         <button type="submit">Adicionar ao Carrinho</button>
                     </form>
 

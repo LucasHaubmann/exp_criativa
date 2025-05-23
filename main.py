@@ -23,7 +23,7 @@ templates.env.filters['b64encode'] = lambda b: base64.b64encode(b).decode('utf-8
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "1234567",
+    "password": "6540",
     "database": "pointback"
 }
 
@@ -101,6 +101,45 @@ async def index(request: Request, db=Depends(get_db)):
             "produtos": produtos
         }
     )
+
+
+@app.get("/categoria/{categoria_slug}", response_class=HTMLResponse)
+async def produtos_por_categoria(categoria_slug: str, request: Request, db=Depends(get_db)):
+    user = get_user_from_session(request)
+
+    try:
+        with db.cursor() as cursor:
+            cursor.execute("""
+                SELECT id, modelo, preco, pontos, imagem
+                FROM produto
+                WHERE categoria = %s
+            """, (categoria_slug,))
+            result = cursor.fetchall()
+            produtos = [
+                {
+                    "id": row[0],
+                    "nome": row[1],
+                    "preco": row[2],
+                    "pontos": row[3],
+                    "imagem_url": f"/imagem/{row[0]}"
+                }
+                for row in result
+            ] if result else []
+    except Exception as e:
+        print(f"Erro ao buscar produtos da categoria {categoria_slug}: {e}")
+        produtos = []
+
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "user": user,
+            "produtos": produtos,
+            "categoria": categoria_slug
+        }
+    )
+
+
 @app.get("/logout")
 async def logout(request: Request):
     # limpa a sessao
