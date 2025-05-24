@@ -79,7 +79,7 @@
             </div>
             <div class="info-produto-tela-produto">
                 <div class="preco-produto-tela-produto-container">
-                    <h1 class="nome-produto-tela-produto">{{ produto.nome }}</h1>
+                    <h1 class="nome-produto-tela-produto" style="word-wrap: break-word;">{{ produto.nome }}</h1>
                     <h1 class="marca-produto-tela-produto">Marca: {{ produto.marca if produto.marca else 'Desconhecida' }}</h1>
                     <div class="preco-reais-pontos">
                         <div>
@@ -97,7 +97,7 @@
                 <div class="acoes-produto">
 
 
-                    <form action="/carrinho/adicionar" method="post">
+                    <form action="/carrinho/adicionar" method="post" class="form-adicionar-carrinho">
                         <input type="hidden" name="id_produto" value="{{ produto.id }}">
 
                         <label for="quantidade" class="quantidade-text">Quantidade:</label>
@@ -110,14 +110,13 @@
                         <button type="submit">Adicionar ao Carrinho</button>
                     </form>
 
-                    <button class="buy-now">Comprar agora</button>
                 </div>
             </div>
-        </div>
 
+        </div>
         <div class="descricao-completa">
-            <p>Descrição</p>
-            <p>{{ produto.descricao }}</p>
+            <p style="font-weight: 900;">Descrição:</p>
+            <p style="word-wrap: break-word;">{{ produto.descricao }}</p>
         </div>
     </div>
 
