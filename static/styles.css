@@ -198,6 +198,7 @@ h2 {
   padding-top: 60px;
   transition: left 0.4s ease-in-out;
   z-index: 10;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.2);
 }
 
 .sidebar ul {
@@ -206,18 +207,47 @@ h2 {
 }
 
 .sidebar ul li {
-  padding: 15px;
-  text-align: center;
+  padding: 15px 20px;
+  text-align: left;
+  transition: background-color 0.3s, transform 0.3s;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar ul li:last-child {
+  border-bottom: none;
 }
 
 .sidebar ul li a {
   color: white;
   text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
   display: block;
 }
 
-.sidebar ul li a:hover {
+.sidebar ul li:hover {
   background-color: #012e40;
+  transform: translateX(5px);
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.close-btn:hover {
+  transform: rotate(90deg);
+}
+
+.sidebar.active {
+  left: 0;
 }
 
 .close-btn {
