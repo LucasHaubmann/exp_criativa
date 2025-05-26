@@ -26,7 +26,7 @@ templates.env.filters['b64encode'] = lambda b: base64.b64encode(b).decode('utf-8
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "123456",
+    "password": "1234567",
     "database": "pointback"
 }
 

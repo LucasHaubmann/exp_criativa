@@ -286,6 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }, 1000); // Reduzido para 1 segundo
         } else {
           showError("senhaLogin", "Email ou senha incorretos.", false);
+          showError("loginEmail", "Email ou senha incorretos.", false);  // ✅ Adicione esta linha!
         }
       } catch (err) {
         console.error("Erro no login:", err);
