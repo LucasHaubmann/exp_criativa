@@ -590,122 +590,94 @@ a {
 /* carrinho */
 
 .carrinho-container {
-  display: flex;
-  justify-content: center;  /* Centraliza horizontalmente */
-  gap: 32px;                 /* Espaço entre os elementos internos */
-  max-width: 80%;
-  margin: 40px auto;         /* Centraliza horizontalmente + espaçamento vertical */
-  flex-wrap: wrap;           /* Quebra para linha de baixo se necessário */
-}
-
-.produtos-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  justify-content: center;
-  padding: 40px;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.img-center {
-  display: flex;
-  justify-content: center;
-}
-
-.produto-card:hover {
-  transform: scale(1.02);
-}
-
-.produto-imagem {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  object-fit: contain;
-  padding: 16px;
-  background-color: #f9f9f9;
-}
-
-.carrinho-produto-info {
-  padding: 0px;
-  height: 125px;
-}
-
-.produto-nome {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #333;
-}
-
-.produto-descricao {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 8px;
-}
-
-.produto-valor {
-  font-size: 16px;
-  font-weight: 500;
-  color: #0077cc;
-  margin-bottom: 4px;
-}
-
-.produto-pontos {
-  font-size: 14px;
-  color: #ffaa00;
-  display: inline-block;
-  margin: 0;
-}
-
-.produtos-container {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  max-width: 1100px;
+  margin: 40px auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
   padding: 20px;
-  background-color: whitesmoke;
-  border-radius: 10px;
-  width: 1000px;
 }
 
-.produto-pontos-container {
-    display: flex;
-    justify-content: center;
+.produtos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .produto-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* imagem | info | botão */
+  align-items: center; /* ✅ Centraliza verticalmente */
+  gap: 20px;
   padding: 16px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 300px;
-  height: 300px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.ponto-img{
-    height: 30px;
+/* ✅ Só aplica o hover se NÃO for .vazio */
+.produto-card:not(.vazio):hover {
+  transform: translateY(-3px);
+}
+
+
+.retirar-form {
+  align-self: flex-start; /* força o botão no topo */
+}
+
+.produto-carrinho-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.carrinho-produto-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* ✅ Centraliza verticalmente o conteúdo */
+  gap: 8px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.produto-nome {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.produto-preco, .produto-pontos, .produto-quantidade {
+  font-size: 14px;
+  color: #555;
+}
+
+.produto-pontos-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ponto-img {
+  width: 20px;
+  height: 20px;
 }
 
 .botao-retirar {
-  background-color: #ff4d4f;
+  background-color: #ff5e5e;
   color: white;
   border: none;
-  padding: 5px 10px;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 8px 12px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
 }
 
 .botao-retirar:hover {
-  background-color: #e04344;
-  transform: scale(1.05);
+  background-color: #e60000;
+}
+
+.retirar-form {
+  align-self: flex-start; /* Mantém no topo da coluna */
 }
 
 .botao-retirar:active {
@@ -725,6 +697,86 @@ a {
   text-align: center;
 }
 
+.resumo-carrinho {
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  min-width: 250px;
+  text-align: center;
+}
+
+
+.resumo-carrinho strong {
+  font-size: 18px;
+  color: #333;
+}
+
+.resumo-carrinho span {
+  font-size: 16px;
+  color: #555;
+  display: block;
+  margin-top: 10px;
+}
+
+.resumo-carrinho button {
+  margin-top: 15px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  width: 100%;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.resumo-carrinho .pagar-pontos {
+  background-color: #024959;
+  color: white;
+}
+
+.resumo-carrinho .pagar-pontos:hover {
+  background-color: #012e40;
+}
+
+.resumo-carrinho .pagar-dinheiro {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+
+.resumo-carrinho .pagar-dinheiro:hover {
+  background-color: #1e7e34;
+}
+
+.produto-card.vazio {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  font-size: 18px;
+  color: #333;
+  font-weight: bold;
+}
+
+.produto-card.vazio:hover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  font-size: 18px;
+  color: #333;
+  font-weight: bold;
+}
+
 .foto-header {
   max-width: 50px;         /* ✅ largura fixa */
   max-height: 50px;        /* ✅ altura fixa */
@@ -742,3 +794,77 @@ a {
   display: block;
   width: 100%;
 }
+
+.toast {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff4f4f; /* Erro padrão */
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-weight: bold;
+    z-index: 1000;
+}
+
+.toast.success {
+    background-color: #28a745;
+}
+
+.toast.error {
+    background-color: #ff4f4f;
+}
+
+@media (max-width: 768px) {
+  .carrinho-container {
+    grid-template-columns: 1fr; /* Coluna única */
+    gap: 20px;
+  }
+
+  .resumo-carrinho {
+    order: -1; /* Coloca no topo */
+    position: static; /* Tira o sticky */
+    width: 100%;
+  }
+
+  .produtos-container {
+    width: 100%;
+  }
+
+  .produto-card {
+    flex-direction: column; /* Coluna para imagem, info, botão */
+    align-items: center;
+    text-align: center;
+  }
+
+  .produto-carrinho-img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+  }
+
+  .carrinho-produto-info {
+    align-items: center;
+  }
+
+  .botao-retirar {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .resumo-carrinho button {
+  margin-top: 15px;
+  padding: 10px 15px; /* Menor altura e largura */
+  border-radius: 8px;
+  width: auto; /* Tira o "100%" e deixa do tamanho do conteúdo */
+  min-width: 150px; /* Se quiser garantir um tamanho mínimo */
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+}
+

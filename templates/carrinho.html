@@ -89,72 +89,66 @@
       <li><a href="/atendimento">ATENDIMENTO</a></li>
     </ul>
   </div>
+  </div>
+<main class="carrinho-container">
+  
+  <section class="produtos-container">
+    {% if produtos %}
+      {% for produto in produtos %}
+    <div class="produto-card">
+      <img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}" class="produto-carrinho-img">
 
-      </div>
-    <div class="carrinho-container">
-        <div class="produtos-container">
-        {% for produto in produtos %}
-          <div class="produto-card">
-          <img class="produto-carrinho-img" src="{{ produto.imagem_url }}" alt="{{ produto.nome }}" />
-
-          <div class="carrinho-produto-info">
-            <h2 class="produto-nome">{{ produto.modelo }}</h2>
-            <p class="produto-preco">Valor: R$ {{ "%.2f"|format(produto.preco) }}</p>
-            <div class="produto-pontos-container">
-              <p class="produto-pontos">{{ produto.pontos }} Pontos</p>
-              <img class="ponto-img" src="../static/imagens/p_moeda_azul.png" alt="Pontos">
-            </div>
-            <p class="produto-quantidade">{{ produto.quantidade }} un.</p>
-          </div>
-
-          <form action="/carrinho/retirar" method="post">
-            <input type="hidden" name="id_produto" value="{{ produto.ID }}">
-            <input type="hidden" name="quantidade" value="1">
-            <button class="botao-retirar" type="submit">Retirar</button>
-          </form>
-
+      <div class="carrinho-produto-info">
+        <span class="produto-nome">{{ produto.nome }}</span>
+        <span class="produto-preco">Preço: R$ {{ '%.2f'|format(produto.preco) }}</span>
+        <div class="produto-pontos-container">
+          <img src="/static/imagens/p-red-icon.png" alt="Ponto" class="ponto-img">
+          <span class="produto-pontos">{{ produto.pontos }} pontos</span>
         </div>
-        {% endfor %}
+        <span class="produto-quantidade">Quantidade: {{ produto.quantidade }}</span>
       </div>
-        <div style="margin: 20px auto; max-width: 320px; background-color: #f0f0f0; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); font-family: 'Montserrat', sans-serif; text-align: center;">
-      <strong style="font-size: 1.1em;">Total do Carrinho:</strong><br>
-      <span style="display: block; margin-top: 8px;">{{ total_pontos }} Pontos</span>
-      <span style="display: block; margin-bottom: 15px;">R$ {{ '%.2f'|format(total_dinheiro) }}</span>
 
-      <form action="/pagar/pontos" method="post" style="margin-bottom: 10px;">
-        <input type="hidden" name="pontos_gastos" value="{{ total_pontos | int }}">
-        <button type="submit"
-          {% if total_pontos == 0 %}
-            disabled
-            style="opacity: 0.6; cursor: not-allowed; font-size: 17px; width: 100%; padding: 20px; background-color: #0077cc; color: white; border: none; border-radius: 5px; font-weight: 600;"
-          {% else %}
-            style="font-size: 17px; width: 100%; padding: 20px; background-color: #0077cc; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer;"
-          {% endif %}
-        >
-          Pagar com Pontos
-        </button>
+      <form action="/carrinho/retirar" method="post" class="retirar-form">
+        <input type="hidden" name="id_produto" value="{{ produto.ID }}">
+        <input type="hidden" name="quantidade" value="1">
+        <button type="submit" class="botao-retirar">Retirar</button>
       </form>
-
-      <form action="/pagar/dinheiro" method="post">
-        <input type="hidden" name="total_dinheiro" value="{{ total_dinheiro }}">
-        <input type="hidden" name="pontos_gerados" value="{{ total_dinheiro | int }}">
-        <button type="submit"
-          {% if total_dinheiro == 0 %}
-            disabled
-            style="opacity: 0.6; cursor: not-allowed; font-size: 17px; width: 100%; padding: 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-weight: 600;"
-          {% else %}
-            style="font-size: 17px; width: 100%; padding: 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer;"
-          {% endif %}
-        >
-          Pagar com Dinheiro
-        </button>
-      </form>
-
     </div>
-    </div>
-    <script src="/static/js/script.js"></script>
-    <script>
-      lucide.createIcons();
-    </script>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="produto-card vazio">
+        <p>O carrinho está vazio no momento.</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="resumo-carrinho">
+    <strong>Total do Carrinho:</strong>
+    <span>{{ total_pontos }} Pontos</span>
+    <span>R$ {{ '%.2f'|format(total_dinheiro) }}</span>
+
+    <form action="/pagar/pontos" method="post">
+      <input type="hidden" name="pontos_gastos" value="{{ total_pontos | int }}">
+      <button type="submit" class="pagar-pontos" id="btn-pontos">
+        Pagar com Pontos
+      </button>
+    </form>
+
+    <form action="/pagar/dinheiro" method="post">
+      <input type="hidden" name="total_dinheiro" value="{{ total_dinheiro }}">
+      <input type="hidden" name="pontos_gerados" value="{{ total_dinheiro | int }}">
+      <button type="submit" class="pagar-dinheiro" id="btn-dinheiro">
+        Pagar com Dinheiro
+      </button>
+    </form>
+  </section>
+
+</main>
+
+<script src="/static/js/script.js"></script>
+<script>
+  lucide.createIcons();
+</script>
 </body>
 </html>
