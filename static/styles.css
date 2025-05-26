@@ -651,8 +651,8 @@ a {
 }
 
 .ponto-img {
-  width: 20px;
-  height: 20px;
+  max-width: 20px;
+  max-height: 20px;
 }
 
 .botao-retirar {
@@ -913,5 +913,5 @@ a {
 #preco-ponto{
   font-weight: 700;
   font-size: 18px;
-  color: #ff2f0a;
+  color: #D32F2F;
 }
