@@ -105,18 +105,19 @@
         <section class="produtos-lista">
           <h2>Produtos em destaque</h2>
           <div class="produtos">
-    {% for produto in produtos %}
-  <div class="produto">
-    <a href="/tela_produto/{{ produto.id }}">
-      <img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}">
-      <div class="info-produto">
-        <span class="nome-produto">{{ produto.nome }}</span>
-        <span class="descricao-produto">{{ produto.descricao | truncate(50) }}</span>
-        <span class="preco-produto">R$ {{ '%.2f' | format(produto.preco) }}</span>
-      </div>
-    </a>
-  </div>
-{% endfor %}
+             {% for produto in produtos %}
+            <div class="produto" onclick="redirectTo('/tela_produto/{{ produto.id }}')">
+              <img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}" />
+              <div class="info-produto">
+                <span class="nome-produto">{{ produto.nome }}</span>
+                <span class="descricao-produto">{{ produto.descricao }}</span>
+                <div>
+                <span class="preco-produto">R$ {{ produto.preco }}</span>
+                </div>
+                <span id='preco-ponto' class="preco-produto">{{ produto.pontos }} pontos</span>
+              </div>
+            </div>
+            {% endfor %}
           </div>
         </section>
       </main>

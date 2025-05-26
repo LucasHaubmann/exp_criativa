@@ -349,12 +349,6 @@ a {
   object-fit: contain;
 }
 
-.preco-produto-tela-produto {
-  font-weight: 600;
-  color: #0affba;
-  font-size: 28px;
-}
-
 .nome-produto-tela-produto {
   font-weight: 700;
   color: white;
@@ -913,16 +907,11 @@ a {
 .preco-produto {
   font-weight: 700;
   font-size: 18px;
-  color: #0affba;
+  color: #ff2f0a;
 }
 
-@media (max-width: 768px) {
-  .produtos {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .produto {
-    width: 90%;
-  }
+#preco-ponto{
+  font-weight: 700;
+  font-size: 18px;
+  color: #ff2f0a;
 }
