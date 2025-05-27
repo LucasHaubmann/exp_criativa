@@ -424,6 +424,57 @@ def adicionar_carrinho(
     return RedirectResponse("/carrinho", status_code=303)
 
 
+def registrar_pedido(user_id: int, tipo_pagamento: str, db) -> int:
+    tipo = tipo_pagamento.lower()
+
+    with db.cursor() as cursor:
+        cursor.execute(
+            "SELECT ID FROM carrinho WHERE id_comprador = %s",
+            (user_id,)
+        )
+        row = cursor.fetchone()
+
+        id_carrinho = row[0]
+
+        cursor.execute("""
+            SELECT pc.id_produto,
+                   pc.quantidade,
+                   p.preco,
+                   p.pontos
+              FROM produto_carrinho pc
+              JOIN produto p ON p.ID = pc.id_produto
+             WHERE pc.id_carrinho = %s
+        """, (id_carrinho,))
+        itens = cursor.fetchall() 
+
+        total_dinheiro = sum(preco * qtd for _, qtd, preco, _ in itens)
+        total_pontos   = sum(pontos * qtd for _, qtd, _, pontos in itens)
+
+        valor = total_dinheiro if tipo == "dinheiro" else None
+        valor_pts = total_pontos if tipo == "pontos" else None
+
+        cursor.execute(
+            """
+            INSERT INTO pedido (id_comprador, valor, valor_Pontos)
+            VALUES (%s, %s, %s)
+            """,
+            (user_id, valor, valor_pts)
+        )
+        pedido_id = cursor.lastrowid
+
+        for id_produto, qtd, _, _ in itens:
+            cursor.execute(
+                """
+                INSERT INTO produto_pedido (id_pedido, id_produto, quantidade)
+                VALUES (%s, %s, %s)
+                """,
+                (pedido_id, id_produto, qtd)
+            )
+
+    db.commit()
+
+    return pedido_id
+
 def limpar_carrinho(user_id: int, db):
     with db.cursor() as cursor:
         # Pega o ID do carrinho do usuário
@@ -516,6 +567,7 @@ async def confirmar_pagamento_pontos(
             )
 
             db.commit()
+            registrar_pedido(user["id"], 'pontos', db)
             limpar_carrinho(user["id"], db)
         return JSONResponse(content={"status": "sucesso", "mensagem": "Pontos descontados com sucesso!"})
 
@@ -554,6 +606,7 @@ async def registrar_pagamento(
                 (pontos_gerados, user["id"])
             )
             db.commit()
+            registrar_pedido(user["id"], 'dinheiro', db)
             limpar_carrinho(user["id"], db)
         return JSONResponse(content={"status": "sucesso", "mensagem": "Pagamento efetuado com sucesso!"})
     except Exception as e:
@@ -746,11 +799,73 @@ async def reset_session(request: Request):
     return {"status": "ok"}
 
 @app.get("/perfil", response_class=HTMLResponse)
-async def perfil(request: Request):
-    if "user_id" in request.session:
-        user = get_user_from_session(request)
-        return templates.TemplateResponse("perfil.html",  {"request": request, "user": user})
-    return RedirectResponse(url="/", status_code=303)
+async def perfil(request: Request, db=Depends(get_db)):
+    if "user_id" not in request.session:
+        return RedirectResponse(url="/", status_code=303)
+
+    user = get_user_from_session(request)
+
+    with db.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT ID, valor, valor_Pontos, dt_Pedido
+              FROM pedido
+             WHERE id_comprador = %s
+             ORDER BY dt_Pedido DESC
+            """,
+            (user["id"],)
+        )
+        pedidos_raw = cursor.fetchall()
+
+        pedidos = []
+        for pedido_id, valor, valor_pts, dt in pedidos_raw:
+            tipo = "Dinheiro" if valor is not None else "Pontos"
+            total = valor if valor is not None else valor_pts
+
+            cursor.execute(
+                """
+                SELECT pr.nome,
+                       pr.imagem,
+                       pr.preco,
+                       pr.pontos
+                  FROM produto_pedido pp
+                  JOIN produto pr ON pr.ID = pp.id_produto
+                 WHERE pp.id_pedido = %s
+                """,
+                (pedido_id,)
+            )
+            produtos_raw = cursor.fetchall()
+
+            produtos = []
+            for nome, imagem_blob, preco, pontos in produtos_raw:
+                foto_b64 = (
+                    base64.b64encode(imagem_blob).decode("utf-8")
+                    if imagem_blob else None
+                )
+
+                valor_item = preco if tipo == "Dinheiro" else pontos
+                produtos.append({
+                    "nome": nome,
+                    "foto": foto_b64,
+                    "valor": valor_item
+                })
+
+            pedidos.append({
+                "id": pedido_id,
+                "tipo": tipo,
+                "total": total,
+                "data": dt.strftime("%d/%m/%Y %H:%M:%S"),
+                "produtos": produtos
+            })
+
+    return templates.TemplateResponse(
+        "perfil.html",
+        {
+            "request": request,
+            "user": user,
+            "pedidos": pedidos
+        }
+    )
 
 @app.post("/editar_usuario")
 async def editar_usuario(

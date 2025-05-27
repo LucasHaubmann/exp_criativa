@@ -1,72 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Perfil - PointBack</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil - PointBack</title>
 
-  <!-- Estilos -->
-     <link rel="stylesheet" href="/static/styles.css" />
-  <link rel="stylesheet" href="/static/css/stylePerfil.css" />
+    <!-- Estilos -->
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/static/css/stylePerfil.css" />
 
-  <link rel="shortcut icon" href="../static/imagens/pb icon.png" type="image/x-icon" />
-  
-  <!-- Ícones e fontes -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
-</head>
+    <link
+      rel="shortcut icon"
+      href="../static/imagens/pb icon.png"
+      type="image/x-icon"
+    />
 
-<body>
+    <!-- Ícones e fontes -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-  <!-- ✅ Toast para mensagens -->
-  <div id="toast" class="toast"></div>
+  <body>
+    <!-- ✅ Toast para mensagens -->
+    <div id="toast" class="toast"></div>
 
-  <!-- ✅ Sidebar -->
-  <nav class="sidebar" id="sidebar">
-    <button class="close-btn" id="close-btn">&times;</button>
-    <ul>
-      <li><a href="/categoria/armazenamento-externo">ARMAZENAMENTO EXTERNO</a></li>
-      <li><a href="/categoria/cpu">CPU</a></li>
-      <li><a href="/categoria/gpu">GPU</a></li>
-      <li><a href="/categoria/placa-mae">PLACA MÃE</a></li>
-      <li><a href="/categoria/memoria-ram">MEMÓRIA RAM</a></li>
-      <li><a href="/categoria/cooler-resfriamento">COOLER/RESFRIAMENTO</a></li>
-      <li><a href="/categoria/fonte-de-alimentacao">FONTE DE ALIMENTAÇÃO</a></li>
-      <li><a href="/categoria/gabinete">GABINETE</a></li>
-      <li><a href="/categoria/monitor">MONITOR</a></li>
-      <li><a href="/categoria/teclado">TECLADO</a></li>
-      <li><a href="/categoria/mouse">MOUSE</a></li>
-      <li><a href="/categoria/headset">HEADSET</a></li>
-      <li><a href="/categoria/notebook">NOTEBOOK</a></li>
-    </ul>
-  </nav>
-
-  <!-- ✅ Header -->
-  <header class="header">
-    <div class="icon-wrapper icon-sidebar">
-      <i data-lucide="menu" id="menu-btn" class="custom-icon"></i>
-    </div>
-    <a href="/"><img src="../static/imagens/Point_Back_LogoAzul.png" alt="Logo" /></a>
-
-    <div class="icon-wrapper user-icon">
-      {% if user %}
-      <div class="user-info">
-        <span class="user-name">{{ user.nome }}</span>
-        <span class="user-name">{{ user.pontos }} Pontos</span>
-      </div>
-      {% endif %}
-      <div class="icon-wrapper user-icon">
-        {% if user.foto %}
-          <img src="data:image/jpeg;base64,{{ user.foto | b64encode }}" alt="Foto de Perfil" class="foto-header">
-        {% else %}
-          <i data-lucide="user-circle" class="custom-icon"></i>
-        {% endif %}
-      </div>
-    </div>
-
-    <div class="user-menu" id="user-menu">
+    <!-- ✅ Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <button class="close-btn" id="close-btn">&times;</button>
       <ul>
+        <li>
+          <a href="/categoria/armazenamento-externo">ARMAZENAMENTO EXTERNO</a>
+        </li>
+        <li><a href="/categoria/cpu">CPU</a></li>
+        <li><a href="/categoria/gpu">GPU</a></li>
+        <li><a href="/categoria/placa-mae">PLACA MÃE</a></li>
+        <li><a href="/categoria/memoria-ram">MEMÓRIA RAM</a></li>
+        <li>
+          <a href="/categoria/cooler-resfriamento">COOLER/RESFRIAMENTO</a>
+        </li>
+        <li>
+          <a href="/categoria/fonte-de-alimentacao">FONTE DE ALIMENTAÇÃO</a>
+        </li>
+        <li><a href="/categoria/gabinete">GABINETE</a></li>
+        <li><a href="/categoria/monitor">MONITOR</a></li>
+        <li><a href="/categoria/teclado">TECLADO</a></li>
+        <li><a href="/categoria/mouse">MOUSE</a></li>
+        <li><a href="/categoria/headset">HEADSET</a></li>
+        <li><a href="/categoria/notebook">NOTEBOOK</a></li>
+      </ul>
+    </nav>
+
+    <!-- ✅ Header -->
+    <header class="header">
+      <div class="icon-wrapper icon-sidebar">
+        <i data-lucide="menu" id="menu-btn" class="custom-icon"></i>
+      </div>
+      <a href="/"
+        ><img src="../static/imagens/Point_Back_LogoAzul.png" alt="Logo"
+      /></a>
+
+      <div class="icon-wrapper user-icon">
         {% if user %}
+        <div class="user-info">
+          <span class="user-name">{{ user.nome }}</span>
+          <span class="user-name">{{ user.pontos }} Pontos</span>
+        </div>
+        {% endif %}
+        <div class="icon-wrapper user-icon">
+          {% if user.foto %}
+          <img
+            src="data:image/jpeg;base64,{{ user.foto | b64encode }}"
+            alt="Foto de Perfil"
+            class="foto-header"
+          />
+          {% else %}
+          <i data-lucide="user-circle" class="custom-icon"></i>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="user-menu" id="user-menu">
+        <ul>
+          {% if user %}
           <li><p>Seus pontos: {{ user.pontos }}</p></li>
           <li><a href="/perfil">Meu perfil</a></li>
           <li><a href="/carrinho">Carrinho</a></li>
@@ -75,93 +93,177 @@
           <li><a href="/adm/usuarios">Gerenciar usuários</a></li>
           {% endif %}
           <li><a href="/logout" id="logout">Sair</a></li>
-        {% else %}
+          {% else %}
           <li><a href="/cadastro">Entrar</a></li>
           <li><a href="/cadastro">Cadastrar</a></li>
-        {% endif %}
+          {% endif %}
+        </ul>
+      </div>
+    </header>
+
+    <!-- ✅ Menu superior -->
+    <div class="header-menu">
+      <ul class="header-menu-list">
+        <li><a href="/">TUDO</a></li>
+        <li>
+          <a href="/categoria/armazenamento-externo">ARMAZENAMENTO EXTERNO</a>
+        </li>
+        <li><a href="/categoria/placa-mae">PLACA MÃE</a></li>
+        <li><a href="/categoria/gabinete">GABINETE</a></li>
+        <li><a href="/categoria/monitor">MONITOR</a></li>
+        <li><a href="/categoria/teclado">TECLADO</a></li>
+        <li><a href="/categoria/mouse">MOUSE</a></li>
+        <li><a href="/atendimento">ATENDIMENTO</a></li>
       </ul>
     </div>
-  </header>
 
-  <!-- ✅ Menu superior -->
-  <div class="header-menu">
-    <ul class="header-menu-list">
-      <li><a href="/">TUDO</a></li>
-      <li><a href="/categoria/armazenamento-externo">ARMAZENAMENTO EXTERNO</a></li>
-      <li><a href="/categoria/placa-mae">PLACA MÃE</a></li>
-      <li><a href="/categoria/gabinete">GABINETE</a></li>
-      <li><a href="/categoria/monitor">MONITOR</a></li>
-      <li><a href="/categoria/teclado">TECLADO</a></li>
-      <li><a href="/categoria/mouse">MOUSE</a></li>
-      <li><a href="/atendimento">ATENDIMENTO</a></li>
-    </ul>
-  </div>
+    <!-- ✅ Formulário de Perfil -->
+    <form
+      id="perfil-form"
+      action="/editar_usuario"
+      method="post"
+      class="perfil-grid"
+      enctype="multipart/form-data"
+    >
+      <!-- ✅ Grid Esquerda -->
+      <section class="grid-esquerda">
+        <h2>Foto de Perfil</h2>
+        {% if user.foto %}
+        <img
+          src="data:image/jpeg;base64,{{ user.foto | b64encode }}"
+          alt="Foto de Perfil"
+          id="foto-perfil"
+        />
+        {% else %}
+        <img
+          src="/static/imagens/default-profile.png"
+          alt="Foto de Perfil"
+          id="foto-perfil"
+        />
+        {% endif %}
 
-  <!-- ✅ Formulário de Perfil -->
-  <form id="perfil-form" action="/editar_usuario" method="post" class="perfil-grid" enctype="multipart/form-data">
+        <div class="trocar-foto">
+          <label for="foto">Trocar Foto</label>
+          <input type="file" id="foto" name="foto" accept="image/*" />
+        </div>
+      </section>
 
-    <!-- ✅ Grid Esquerda -->
-    <section class="grid-esquerda">
-      <h2>Foto de Perfil</h2>
-      {% if user.foto %}
-        <img src="data:image/jpeg;base64,{{ user.foto | b64encode }}" alt="Foto de Perfil" id="foto-perfil">
-      {% else %}
-        <img src="/static/imagens/default-profile.png" alt="Foto de Perfil" id="foto-perfil">
-      {% endif %}
+      <!-- ✅ Grid Direita -->
+      <section class="grid-direita">
+        <div class="grid-direita-inferior">
+          <h2>Seus Dados</h2>
 
-      <div class="trocar-foto">
-        <label for="foto">Trocar Foto</label>
-        <input type="file" id="foto" name="foto" accept="image/*">
-      </div>
-    </section>
+          <div class="form-group">
+            <label for="nome">Nome</label>
+            <input
+              type="text"
+              id="nome"
+              name="nome"
+              value="{{ user.nome }}"
+              required
+            />
+            <small id="error-nome" class="form-error-message"></small>
+          </div>
 
-    <!-- ✅ Grid Direita -->
-    <section class="grid-direita">
+          <div class="form-group">
+            <label for="cpf">CPF</label>
+            <input
+              type="text"
+              id="cpf"
+              name="cpf"
+              value="{{ user.cpf }}"
+              readonly
+            />
+          </div>
 
-      <div class="grid-direita-inferior">
-        <h2>Seus Dados</h2>
+          <div class="form-group">
+            <label for="dataNascimento">Data de Nascimento</label>
+            <input
+              type="text"
+              id="dataNascimento"
+              name="dataNascimento"
+              value="{{ user.dt_nasc.strftime('%d/%m/%Y') }}"
+              required
+            />
+            <small id="error-dataNascimento" class="form-error-message"></small>
+          </div>
 
-        <div class="form-group">
-          <label for="nome">Nome</label>
-          <input type="text" id="nome" name="nome" value="{{ user.nome }}" required />
-          <small id="error-nome" class="form-error-message"></small>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value="{{ user.email }}"
+              required
+            />
+            <small id="error-email" class="form-error-message"></small>
+          </div>
+
+          <div class="form-group">
+            <label for="pontos">Pontos</label>
+            <input
+              type="text"
+              id="pontos"
+              name="pontos"
+              value="{{ user.pontos }}"
+              readonly
+            />
+          </div>
+
+          <button type="submit" class="btn-salvar">Salvar Alterações</button>
         </div>
 
-        <div class="form-group">
-          <label for="cpf">CPF</label>
-          <input type="text" id="cpf" name="cpf" value="{{ user.cpf }}" readonly />
+        <div class="grid-direita-inferior">
+          <h2>Meus Pedidos</h2>
+          {% if pedidos %}
+          <ul class="lista-pedidos">
+            {% for pedido in pedidos %}
+            <li class="pedido-item">
+              <p>
+                <strong>Pedido #{{ pedido.id }}</strong> – {{ pedido.data }}
+              </p>
+              <p>
+                Tipo: {{ pedido.tipo }} | Total: {% if pedido.tipo == "Dinheiro"
+                %}R$ {{ '%.2f' % pedido.total }} {% else %}{{ pedido.total }}
+                Pontos{% endif %}
+              </p>
+              <div class="itens-pedido">
+                {% for prod in pedido.produtos %}
+                <div class="item-pedido">
+                  {% if prod.foto %}
+                  <img
+                    src="data:image/jpeg;base64,{{ prod.foto }}"
+                    alt="{{ prod.nome }}"
+                    class="pedido-foto"
+                  />
+                  {% else %}
+                  <div class="pedido-foto placeholder"></div>
+                  {% endif %}
+                  <p class="nome-produto">{{ prod.nome }}</p>
+                  <p class="valor-produto">
+                    {% if pedido.tipo == "Dinheiro" %} R$ {{ '%.2f' % prod.valor
+                    }} {% else %} {{ prod.valor }} pts {% endif %}
+                  </p>
+                </div>
+                {% endfor %}
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p>Você ainda não fez nenhum pedido.</p>
+          {% endif %}
         </div>
+      </section>
+    </form>
 
-        <div class="form-group">
-          <label for="dataNascimento">Data de Nascimento</label>
-          <input type="text" id="dataNascimento" name="dataNascimento" value="{{ user.dt_nasc.strftime('%d/%m/%Y') }}" required />
-          <small id="error-dataNascimento" class="form-error-message"></small>
-        </div>
+    {% include "geral/footer.html" %}
 
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" value="{{ user.email }}" required />
-          <small id="error-email" class="form-error-message"></small>
-        </div>
-
-        <div class="form-group">
-          <label for="pontos">Pontos</label>
-          <input type="text" id="pontos" name="pontos" value="{{ user.pontos }}" readonly />
-        </div>
-
-        <button type="submit" class="btn-salvar">Salvar Alterações</button>
-      </div>
-
-    </section>
-  </form>
-
-  {% include "geral/footer.html" %}
-
-  <script>
-    lucide.createIcons();
-  </script>
-  <script src="/static/js/scriptPerfil.js"></script>
-  <script src="/static/js/script.js"></script>
-  
-</body>
+    <script>
+      lucide.createIcons();
+    </script>
+    <script src="/static/js/scriptPerfil.js"></script>
+    <script src="/static/js/script.js"></script>
+  </body>
 </html>

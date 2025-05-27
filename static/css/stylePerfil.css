@@ -33,7 +33,7 @@ input[readonly] {
   object-fit: cover;
 }
 
-.trocar-foto input[type='file'] {
+.trocar-foto input[type="file"] {
   display: none;
 }
 
@@ -135,7 +135,7 @@ input[readonly] {
 }
 
 .toast.success {
-  background-color: #4CAF50;
+  background-color: #4caf50;
 }
 
 /* ✅ Mensagem de erro abaixo do input */
@@ -146,14 +146,14 @@ input[readonly] {
 }
 
 .foto-header {
-  max-width: 50px;         /* ✅ largura fixa */
-  max-height: 50px;        /* ✅ altura fixa */
-  min-width: 50px;      
+  max-width: 50px; /* ✅ largura fixa */
+  max-height: 50px; /* ✅ altura fixa */
+  min-width: 50px;
   min-height: 50px;
-  border-radius: 50%;  /* ✅ redonda */
-  object-fit: cover;   /* ✅ preenche e corta excesso */
-  display: block;      
-  overflow: hidden;    /* ✅ esconde partes extras */
+  border-radius: 50%; /* ✅ redonda */
+  object-fit: cover; /* ✅ preenche e corta excesso */
+  display: block;
+  overflow: hidden; /* ✅ esconde partes extras */
 }
 
 .icon-wrapper.user-icon img {
@@ -163,6 +163,53 @@ input[readonly] {
   width: 100%;
 }
 
+.lista-pedidos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pedido-item {
+  background: #fff;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.itens-pedido {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.item-pedido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120px;
+}
+
+.pedido-foto {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #eee;
+}
+
+.pedido-foto.placeholder {
+  display: block;
+  background: #ccc;
+}
+
+.nome-produto,
+.valor-produto {
+  margin: 4px 0;
+  font-size: 13px;
+  text-align: center;
+}
 
 @media (max-width: 1200px) {
   .perfil-grid {
@@ -192,11 +239,10 @@ input[readonly] {
   }
 
   .icon-wrapper.user-icon img {
-  padding: 0;
-  margin: 0;
-  display: block;
-  width: 100%;
-  scale: .9;
-}
-
+    padding: 0;
+    margin: 0;
+    display: block;
+    width: 100%;
+    scale: 0.9;
+  }
 }
