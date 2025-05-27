@@ -145,6 +145,11 @@ h2 {
   min-width: 200px;
 }
 
+.img-center {
+    display: flex;
+    justify-content: center;
+}
+
 .info-produto {
   display: flex;
   flex-direction: column;

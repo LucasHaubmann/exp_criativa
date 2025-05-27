@@ -70,11 +70,9 @@
         {% if user %}
           <li><p>Seus pontos: {{ user.pontos }}</p></li>
           <li><a href="/perfil">Meu perfil</a></li>
-          <li><a href="/meus-pedidos">Meus pedidos</a></li>
-          <li><a href="/favoritos">Lista de desejos</a></li>
           <li><a href="/carrinho">Carrinho</a></li>
-          <li><a href="/inventario">Perfil vendedor</a></li>
           {% if user.admin %}
+          <li><a href="/inventario">Perfil vendedor</a></li>
           <li><a href="/adm/usuarios">Gerenciar usuários</a></li>
           {% endif %}
           <li><a href="/logout" id="logout">Sair</a></li>

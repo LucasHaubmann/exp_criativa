@@ -26,7 +26,7 @@ templates.env.filters['b64encode'] = lambda b: base64.b64encode(b).decode('utf-8
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "123456",
+    "password": "6540",
     "database": "pointback"
 }
 
@@ -216,6 +216,8 @@ async def cadastrar_usuario(
     finally:
         db.close()
 
+
+
 @app.post("/login")
 async def login(
     request: Request,
@@ -227,6 +229,7 @@ async def login(
         with db.cursor() as cursor:
             cursor.execute("SELECT id, senha FROM usuario WHERE email = %s", (loginEmail,))
             result = cursor.fetchone()
+            print("peidao")
             if result:
                 user_id, senha_hash = result
 
@@ -235,6 +238,8 @@ async def login(
 
                 if bcrypt.checkpw(senhaLogin.encode('utf-8'), senha_hash):
                     request.session["user_id"] = user_id
+                    print("logado")
+                    return RedirectResponse(url="/", status_code=303)
                     return JSONResponse(content={"mensagem": "Login realizado com sucesso!"}, status_code=200)
         
         # Se falhou
@@ -245,36 +250,40 @@ async def login(
 
 @app.get("/inventario", response_class=HTMLResponse)
 async def inventario(request: Request, db=Depends(get_db)):
-    try:
-        with db.cursor() as cursor:
-            cursor.execute("""
-                SELECT id, modelo, preco, pontos, imagem
-                FROM produto
-            """)
-            result = cursor.fetchall()
-            produtos = [
-                {
-                    "id": row[0],
-                    "nome": row[1],  # modelo -> nome para facilitar no HTML
-                    "preco": row[2],
-                    "pontos": row[3],
-                    "imagem_url": f"/imagem/{row[0]}" 
-                }
-                for row in result
-            ]
+    if "user_id" in request.session:
+        user = get_user_from_session(request)
+        if user['admin'] == True:
+            try:
+                with db.cursor() as cursor:
+                    cursor.execute("""
+                        SELECT id, modelo, preco, pontos, imagem
+                        FROM produto
+                    """)
+                    result = cursor.fetchall()
+                    produtos = [
+                        {
+                            "id": row[0],
+                            "nome": row[1],  # modelo -> nome para facilitar no HTML
+                            "preco": row[2],
+                            "pontos": row[3],
+                            "imagem_url": f"/imagem/{row[0]}"
+                        }
+                        for row in result
+                    ]
 
-        return templates.TemplateResponse(
-            "inventario.html",
-            {
-                "request": request,
-                "produtos": produtos
-            }
-        )
-    except Exception as e:
-        print(f"Erro ao buscar produtos: {e}")
-        return RedirectResponse(url="/", status_code=303)
-    finally:
-        db.close()
+                return templates.TemplateResponse(
+                    "inventario.html",
+                    {
+                        "request": request,
+                        "produtos": produtos
+                    }
+                )
+            except Exception as e:
+                print(f"Erro ao buscar produtos: {e}")
+                return RedirectResponse(url="/", status_code=303)
+            finally:
+                db.close()
+    return RedirectResponse(url="/", status_code=303)
 
 @app.post("/carrinho/retirar")
 def retirar_produto_carrinho(
@@ -573,7 +582,11 @@ async def atendimento(request: Request):
 
 @app.get("/cadastro_produto", response_class=HTMLResponse)
 async def cadastro_produto(request: Request):
-    return templates.TemplateResponse("cadastro_produto.html", {"request": request})
+    if "user_id" in request.session:
+        user = get_user_from_session(request)
+        if user['admin'] == True:
+            return templates.TemplateResponse("cadastro_produto.html", {"request": request})
+    return RedirectResponse(url="/", status_code=303)
 
 @app.post("/editar_produto")
 async def post_editar_produto(
@@ -619,32 +632,35 @@ async def post_editar_produto(
 
 @app.get("/editar_produto", response_class=HTMLResponse)
 async def editar_produto(request: Request, id_produto: int, db=Depends(get_db)):
-    try:
-        with db.cursor() as cursor:
-            cursor.execute("""
-                SELECT id, nome, categoria, modelo, marca, descricao, preco, pontos
-                FROM produto
-                WHERE id = %s
-            """, (id_produto,))
-            row = cursor.fetchone()
+    if "user_id" in request.session:
+        user = get_user_from_session(request)
+        if user['admin'] == True:
+            try:
+                with db.cursor() as cursor:
+                    cursor.execute("""
+                        SELECT id, nome, categoria, modelo, marca, descricao, preco, pontos
+                        FROM produto
+                        WHERE id = %s
+                    """, (id_produto,))
+                    row = cursor.fetchone()
 
-        if row:
-            produto = {
-                "id": row[0],
-                "nome": row[1],
-                "categoria": row[2],
-                "modelo": row[3],
-                "marca": row[4],
-                "descricao": row[5],
-                "preco": row[6],
-                "pontos": row[7]
-            }
-            return templates.TemplateResponse("editar_produto.html", {"request": request, "produto": produto})
-        else:
-            return RedirectResponse(url="/inventario", status_code=303)
-    finally:
-        db.close()
-
+                if row:
+                    produto = {
+                        "id": row[0],
+                        "nome": row[1],
+                        "categoria": row[2],
+                        "modelo": row[3],
+                        "marca": row[4],
+                        "descricao": row[5],
+                        "preco": row[6],
+                        "pontos": row[7]
+                    }
+                    return templates.TemplateResponse("editar_produto.html", {"request": request, "produto": produto})
+                else:
+                    return RedirectResponse(url="/inventario", status_code=303)
+            finally:
+                db.close()
+    return RedirectResponse(url="/", status_code=303)
 
 
 @app.post("/cadastro_produto")
@@ -660,7 +676,6 @@ async def post_cadastro_produto(
     imagem: UploadFile = File(...),
     db=Depends(get_db)
 ):
-    print("a")
     try:
         imagem_bytes = await imagem.read()
 
