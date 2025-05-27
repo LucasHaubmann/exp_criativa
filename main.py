@@ -14,9 +14,10 @@ from fastapi import Request, Form, Depends
 from fastapi.responses import RedirectResponse
 from starlette.status import HTTP_302_FOUND
 
+
 app = FastAPI()
 
-app.add_middleware(SessionMiddleware, secret_key="123456")
+app.add_middleware(SessionMiddleware, secret_key="123456", max_age=180) #180 segundos de sessao, trocar pra 5 dps
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -26,7 +27,7 @@ templates.env.filters['b64encode'] = lambda b: base64.b64encode(b).decode('utf-8
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "1234567",
+    "password": "6540",
     "database": "pointback"
 }
 
