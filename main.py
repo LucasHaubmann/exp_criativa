@@ -173,16 +173,24 @@ async def cadastrar_usuario(
         request.session["nao_autenticado"] = True
         request.session["mensagem_header"] = "Cadastro"
         request.session["mensagem"] = "Erro: Formato de data inválido."
-        return RedirectResponse(url="/", status_code=303)
+        return RedirectResponse(url="/cadastro", status_code=400)
     try:
         with db.cursor() as cursor:
             #verifica se ja existe conta com mesmo cpf
             cursor.execute("SELECT ID FROM usuario WHERE cpf = %s", (cpf,))
             if cursor.fetchone():
-                request.session["nao_autenticado"] = True
-                request.session["mensagem_header"] = "Cadastro"
-                request.session["mensagem"] = "Erro: Este CPF já está em uso!"
-                return RedirectResponse(url="/", status_code=303)
+                return JSONResponse(
+                    status_code=409,
+                    content={"mensagem": "Erro: Este CPF já está em uso!"}
+                )
+
+            # já existe email?
+            cursor.execute("SELECT ID FROM usuario WHERE email = %s", (email,))
+            if cursor.fetchone():
+                return JSONResponse(
+                    status_code=409,
+                    content={"mensagem": "Erro: Este Email já está em uso!"}
+                )
 
             with open("static/imagens/default-profile.png", "rb") as f:
                 default_foto = f.read()
@@ -205,7 +213,8 @@ async def cadastrar_usuario(
             result = cursor.fetchone()
 
             request.session["user_id"] = result
-            return RedirectResponse(url="/", status_code=303)
+            return JSONResponse(status_code=303,
+                    content={"mensagem": "Sucesso"})
 
     except Exception as e:
         request.session["nao_autenticado"] = True

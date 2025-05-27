@@ -2,7 +2,6 @@ const regex = {
   nome: /^(?!\s*$)[a-zA-ZÀ-ÿ\s]{3,}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   senha: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
-
 };
 
 function validarCPF(cpf) {
@@ -21,17 +20,20 @@ function validarCPF(cpf) {
 }
 
 function validarDataNascimento(dataStr) {
-  const [dia, mes, ano] = dataStr.split('/').map(Number);
+  const [dia, mes, ano] = dataStr.split("/").map(Number);
   if (!dia || !mes || !ano || String(ano).length !== 4) return "Data inválida.";
 
   const data = new Date(ano, mes - 1, dia);
   const hoje = new Date();
 
   if (data > hoje) return "Data não pode ser futura.";
-  if (ano > 2025 || (ano === 2025 && mes > hoje.getMonth() + 1)) return "Ano/mês não pode ultrapassar 2025.";
+  if (ano > 2025 || (ano === 2025 && mes > hoje.getMonth() + 1))
+    return "Ano/mês não pode ultrapassar 2025.";
 
   const idade = hoje.getFullYear() - ano;
-  const aniversarioJaPassou = (mes < hoje.getMonth() + 1) || (mes === hoje.getMonth() + 1 && dia <= hoje.getDate());
+  const aniversarioJaPassou =
+    mes < hoje.getMonth() + 1 ||
+    (mes === hoje.getMonth() + 1 && dia <= hoje.getDate());
   const idadeExata = aniversarioJaPassou ? idade : idade - 1;
 
   if (idadeExata < 18) return "É necessário ter pelo menos 18 anos.";
@@ -43,7 +45,6 @@ function validarDataNascimento(dataStr) {
 }
 
 function validateField(name, value) {
-
   switch (name) {
     case "nome":
       return regex.nome.test(value) ? "" : "Nome inválido.";
@@ -54,17 +55,19 @@ function validateField(name, value) {
     case "email":
       return regex.email.test(value) ? "" : "Email inválido.";
     case "senha":
-      return regex.senha.test(value) ? "" : "Senha fraca: use letras, números e símbolos.";
+      return regex.senha.test(value)
+        ? ""
+        : "Senha fraca: use letras, números e símbolos.";
     case "confirmPassword":
       const original = document.getElementById("senhaCadastro").value.trim();
-      if (value.length == 0){
+      if (value.length == 0) {
         return " ";
       }
       return value === original ? "" : "As senhas não coincidem.";
     case "loginEmail":
-        return regex.email.test(value) ? "" : "Email inválido.";
+      return regex.email.test(value) ? "" : "Email inválido.";
     case "senhaLogin":
-        return value.trim() ? "" : "Campo obrigatório";
+      return value.trim() ? "" : "Campo obrigatório";
     default:
       return "";
   }
@@ -107,7 +110,8 @@ function aplicarMascaraData(input) {
   input.addEventListener("input", function () {
     let value = input.value.replace(/\D/g, "").slice(0, 8);
     if (value.length >= 3) value = value.replace(/(\d{2})(\d{1,2})/, "$1/$2");
-    if (value.length >= 6) value = value.replace(/(\d{2}\/\d{2})(\d{1,4})/, "$1/$2");
+    if (value.length >= 6)
+      value = value.replace(/(\d{2}\/\d{2})(\d{1,4})/, "$1/$2");
     input.value = value;
   });
 }
@@ -165,6 +169,11 @@ function setupValidationFormObject(form, fields) {
     }
 
     const formData = new FormData(form);
+
+    if (form.action === "http://127.0.0.1:8000/login") {
+      return;
+    }
+
     fetch(form.action, {
       method: "POST",
       body: formData,
@@ -185,7 +194,7 @@ function setupValidationFormObject(form, fields) {
           data = { mensagem: "Cadastro realizado com sucesso!" };
         }
 
-        if (response.status === 200) {
+        if (response.status === 303) {
           showToast(data.mensagem || "Operação realizada com sucesso!", true);
           setTimeout(() => {
             window.location.href = "/";
@@ -203,7 +212,6 @@ function setupValidationFormObject(form, fields) {
   });
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
   const cpfInput = document.querySelector("input[name='cpf']");
   const dataInput = document.querySelector("input[name='dataNascimento']");
@@ -215,9 +223,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (allForms.length === 2) {
     const formCadastro = allForms[0]; // primeiro formulário da tela
-    const formLogin = allForms[1];    // segundo formulário da tela
-  
-    setupValidationFormObject(formCadastro, ["nome", "cpf", "dataNascimento", "email", "senha", "confirmPassword"]);
+    const formLogin = allForms[1]; // segundo formulário da tela
+
+    setupValidationFormObject(formCadastro, [
+      "nome",
+      "cpf",
+      "dataNascimento",
+      "email",
+      "senha",
+      "confirmPassword",
+    ]);
     setupValidationFormObject(formLogin, ["loginEmail", "senhaLogin"], true);
   }
 
@@ -233,14 +248,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-    // === validação de Confirmar Senha ===
-    const confirmInput = document.getElementById("confirmPassword");
-    if (confirmInput) {
-      confirmInput.addEventListener("input", (e) => {
-        const msg = validateField("confirmPassword", e.target.value.trim());
-        showError("confirmPassword", msg, confirmInput === document.activeElement);
-      });
-    }
+  // === validação de Confirmar Senha ===
+  const confirmInput = document.getElementById("confirmPassword");
+  if (confirmInput) {
+    confirmInput.addEventListener("input", (e) => {
+      const msg = validateField("confirmPassword", e.target.value.trim());
+      showError(
+        "confirmPassword",
+        msg,
+        confirmInput === document.activeElement
+      );
+    });
+  }
 
   const formLogin = document.querySelector("form[action='/login']");
   if (formLogin) {
@@ -286,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }, 1000); // Reduzido para 1 segundo
         } else {
           showError("senhaLogin", "Email ou senha incorretos.", false);
-          showError("loginEmail", "Email ou senha incorretos.", false);  // ✅ Adicione esta linha!
+          showError("loginEmail", "Email ou senha incorretos.", false);
         }
       } catch (err) {
         console.error("Erro no login:", err);
@@ -297,13 +316,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("DOMContentLoaded", () => {
     fetch("/session-message")
-        .then(res => res.json())
-        .then(data => {
-            if (data.mensagem) {
-                showToast(data.mensagem, data.mensagem.toLowerCase().includes("sucesso"));
-            }
-        });
-});
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.mensagem) {
+          showToast(
+            data.mensagem,
+            data.mensagem.toLowerCase().includes("sucesso")
+          );
+        }
+      });
+  });
 });
 
 window.addEventListener("load", () => {
