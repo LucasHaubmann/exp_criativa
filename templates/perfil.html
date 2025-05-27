@@ -17,10 +17,11 @@
 </head>
 
 <body>
+
   <!-- ✅ Toast para mensagens -->
   <div id="toast" class="toast"></div>
 
-<!-- ✅ Sidebar -->
+  <!-- ✅ Sidebar -->
   <nav class="sidebar" id="sidebar">
     <button class="close-btn" id="close-btn">&times;</button>
     <ul>
@@ -68,11 +69,9 @@
         {% if user %}
           <li><p>Seus pontos: {{ user.pontos }}</p></li>
           <li><a href="/perfil">Meu perfil</a></li>
-          <li><a href="/meus-pedidos">Meus pedidos</a></li>
-          <li><a href="/favoritos">Lista de desejos</a></li>
           <li><a href="/carrinho">Carrinho</a></li>
-          <li><a href="/inventario">Perfil vendedor</a></li>
           {% if user.admin %}
+          <li><a href="/inventario">Perfil vendedor</a></li>
           <li><a href="/adm/usuarios">Gerenciar usuários</a></li>
           {% endif %}
           <li><a href="/logout" id="logout">Sair</a></li>
@@ -87,6 +86,7 @@
   <!-- ✅ Menu superior -->
   <div class="header-menu">
     <ul class="header-menu-list">
+      <li><a href="/">TUDO</a></li>
       <li><a href="/categoria/armazenamento-externo">ARMAZENAMENTO EXTERNO</a></li>
       <li><a href="/categoria/placa-mae">PLACA MÃE</a></li>
       <li><a href="/categoria/gabinete">GABINETE</a></li>
@@ -117,11 +117,6 @@
 
     <!-- ✅ Grid Direita -->
     <section class="grid-direita">
-
-      <div class="grid-direita-superior">
-        <h2>Meus Pedidos</h2>
-        <p>Você ainda não realizou nenhum pedido.</p>
-      </div>
 
       <div class="grid-direita-inferior">
         <h2>Seus Dados</h2>

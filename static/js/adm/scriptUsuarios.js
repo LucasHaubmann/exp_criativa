@@ -210,7 +210,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (camposInvalidos.length > 0) {
-      alert("Por favor, corrija os campos destacados.");
       return;
     }
 
@@ -249,7 +248,6 @@ document
     });
 
     if (camposInvalidos.length > 0) {
-      alert("Por favor, corrija os campos destacados.");
       return;
     }
 
@@ -262,14 +260,11 @@ document
       });
 
       if (response.ok) {
-        alert("Usuário atualizado com sucesso!");
         window.location.reload();
       } else {
-        alert("Erro ao atualizar usuário.");
       }
     } catch (error) {
       console.error("Erro ao enviar requisição:", error);
-      alert("Erro ao conectar com o servidor.");
     }
 
     limparErrosFormulario("editUserForm");
@@ -296,14 +291,14 @@ document
       });
 
       if (response.ok) {
-        alert("Usuário excluído com sucesso!");
+
         window.location.reload();
       } else {
-        alert("Erro ao excluir usuário.");
+
       }
     } catch (error) {
       console.error("Erro ao excluir usuário:", error);
-      alert("Erro ao conectar com o servidor.");
+
     }
 
     deleteModal.style.display = "none";
