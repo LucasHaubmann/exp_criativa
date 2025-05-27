@@ -92,51 +92,52 @@
 
         <div class="produto-container">
         <div class="produto-info">
-            <div class="produto-imagem">
-                <img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}">
-            </div>
-            <div class="info-produto-tela-produto">
-                <div class="preco-produto-tela-produto-container">
-                    <h1 class="nome-produto-tela-produto" style="word-wrap: break-word;">{{ produto.nome }}</h1>
-                    <h1 class="marca-produto-tela-produto">Marca: {{ produto.marca if produto.marca else 'Desconhecida' }}</h1>
-                    <div class="preco-reais-pontos">
-                        <div>
-                            <img src="../static/imagens/cash_icon.png" alt="">
-                            <span class="preco-produto-tela-produto">R$ {{ "%.2f"|format(produto.preco) }}</span>
-                        </div>
-
-                        <span style="color: white;">ou</span>
-                        <div>
-                            <img src="../static/imagens/p-red-icon.png" alt="">
-                            <span class="preco-produto-tela-produto">{{ produto.pontos }} pontos</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="acoes-produto">
-
-
-                    <form action="/carrinho/adicionar" method="post" class="form-adicionar-carrinho">
-                        <input type="hidden" name="id_produto" value="{{ produto.id }}">
-
-                        <label for="quantidade" class="quantidade-text">Quantidade:</label>
-                        <select id="quantidade" name="quantidade" class="quantidade-select">
-                            {% for i in range(1, 11) %}
-                                <option value="{{ i }}">{{ i }}</option>
-                            {% endfor %}
-                        </select>
-
-                        <button type="submit">Adicionar ao Carrinho</button>
-                    </form>
-
-                </div>
-            </div>
-
-        </div>
-        <div class="descricao-completa">
-            <p style="font-weight: 900;">Descrição:</p>
-            <p style="word-wrap: break-word;">{{ produto.descricao }}</p>
-        </div>
+    <div class="produto-imagem">
+        <img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}">
     </div>
+    <div class="info-produto-tela-produto">
+        <div class="preco-produto-tela-produto-container">
+            <h1 class="nome-produto-tela-produto" style="word-wrap: break-word;">{{ produto.nome }}</h1>
+            <h1 class="marca-produto-tela-produto">Marca: {{ produto.marca if produto.marca else 'Desconhecida' }}</h1>
+           <p class="descricao-produto-tela-produto" style="word-wrap: break-word; color: white; margin: 20px 0;">{{ produto.descricao }}</p>
+
+            <div class="preco-reais-pontos" style="display: flex; align-items: start; color: white;">
+    <div style="display: flex; align-items: center; margin-right: 10px;">
+        <img src="../static/imagens/cash_icon.png" alt="" style="margin-right: 5px;">
+        <span class="preco-produto-tela-produto">R$ {{ "%.2f"|format(produto.preco) }}</span>
+    </div>
+
+    <span style="margin: 0 10px;">ou</span>
+
+    <div style="display: flex; align-items: center;">
+        <img src="../static/imagens/p-red-icon.png" alt="" style="margin-right: 5px;">
+        <span class="preco-produto-tela-produto">{{ produto.pontos }} pontos</span>
+    </div>
+</div>
+
+            
+        </div>
+        
+  <div class="acoes-produto">
+    <form action="/carrinho/adicionar" method="post" class="form-adicionar-carrinho">
+        <input type="hidden" name="id_produto" value="{{ produto.id }}">
+
+        {% if not user.admin %} <!-- Verifica se o usuário não é administrador -->
+        <label for="quantidade" class="quantidade-text">Quantidade:</label>
+        <select id="quantidade" name="quantidade" class="quantidade-select" style="margin-bottom: 10px;">
+            {% for i in range(1, 11) %}
+                <option value="{{ i }}">{{ i }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Adicionar ao Carrinho</button>
+        {% endif %}
+    </form>
+</div>
+
+
+    </div>
+</div>
 
 
     <script>

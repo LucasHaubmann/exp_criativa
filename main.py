@@ -26,15 +26,13 @@ templates.env.filters['b64encode'] = lambda b: base64.b64encode(b).decode('utf-8
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "1234567",
+    "password": "123456",
     "database": "pointback"
 }
-
 
 # função para conectar com MySQL
 def get_db():
     return pymysql.connect(**DB_CONFIG)
-
 
 def is_user_logged_in(request: Request) -> bool:
     return "user_id" in request.session
@@ -553,7 +551,6 @@ async def registrar_pagamento(
         print(f"Erro ao registrar pagamento: {e}")
         return JSONResponse(status_code=500, content={"status": "erro", "mensagem": "Erro no servidor"})
 
-
 @app.get("/imagem/{produto_id}")
 async def imagem_produto(produto_id: int, db=Depends(get_db)):
     try:
@@ -567,9 +564,12 @@ async def imagem_produto(produto_id: int, db=Depends(get_db)):
     finally:
         db.close()
 
+
 @app.get("/atendimento", response_class=HTMLResponse)
 async def atendimento(request: Request):
-    return templates.TemplateResponse("atendimento.html", {"request": request})
+    user = get_user_from_session(request)
+    return templates.TemplateResponse("atendimento.html", {"request": request, "user": user})
+
 
 @app.get("/cadastro_produto", response_class=HTMLResponse)
 async def cadastro_produto(request: Request):

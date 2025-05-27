@@ -72,6 +72,7 @@
         }
 
         .view-btn, .edit-btn, .delete-btn {
+            width: 100px;
             padding: 5px 10px;
             background-color: var(--cor-botao); /* Azul para os botões */
             color: white;
@@ -83,7 +84,7 @@
         }
 
         .view-btn:hover, .edit-btn:hover, .delete-btn:hover {
-            background-color: darkblue; /* Cor mais escura ao passar o mouse */
+            background-color: darkblue;
         }
 
         .product-container {
@@ -116,7 +117,7 @@
 
         .product-price img {
             width: 24px;
-            height: 24px; 
+            height: 24px;
         }
         .img-product-card {
             height: 150px;              /* altura fixa */
@@ -156,9 +157,29 @@
             <div class="product-price">
                 <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
             </div>
-            <button class="view-btn">Ver</button>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Excluir</button>
+
+            <form action="/tela_produto/{{ produto.id }}" method="get">
+                <input type="hidden" name="id_produto" value="{{ produto.id }}">
+                <button type="submit" class="delete-btn">Ver</button>
+            </form>
+
+            <form action="/editar_produto" method="get">
+                <input type="hidden" name="id_produto" value="{{ produto.id }}">
+                <button type="submit" class="delete-btn">Editar</button>
+            </form>
+
+            <form action="/produto/excluir" method="post" onsubmit="return confirmarExclusao();">
+                <input type="hidden" name="id_produto" value="{{ produto.id }}">
+                <button type="submit" class="delete-btn">Deletar</button>
+            </form>
+
+
+<script>
+function confirmarExclusao() {
+  return confirm("Tem certeza que deseja excluir este produto?");
+}
+</script>
+
         </div>
         {% endfor %}
 </div>
