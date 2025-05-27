@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <link rel="shortcut icon" href="../imagens/pb icon.png" type="image/x-icon">
@@ -24,40 +23,21 @@
         }
 
         h2 {
-            color: white; /* Alterado para branco */
-            margin: 0; /* Remove a margem padrão */
-            flex-grow: 1; /* Permite que o título ocupe o espaço disponível */
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--cor-5);
-            padding: 10px 20px;
-        }
-
-        .icon-wrapper {
-            cursor: pointer;
             color: white;
-            font-size: 24px;
-        }
-
-        .header img {
-            height: 40px;
+            margin: 0;
+            flex-grow: 1;
         }
 
         .button-container {
-            text-decoration: white;
             display: flex;
             color: #ffffff;
             align-items: center;
-            justify-content: center; /* Centraliza o conteúdo */
-            margin: 20px 0; /* Espaço acima e abaixo do título */
+            justify-content: center;
+            margin: 20px 0;
         }
 
         .add-product-btn {
-            margin-left: 20px; /* Espaço entre o título e o botão */
+            margin-left: 20px;
             padding: 10px;
             background-color: var(--cor-3);
             color: white;
@@ -74,13 +54,13 @@
         .view-btn, .edit-btn, .delete-btn {
             width: 100px;
             padding: 5px 10px;
-            background-color: var(--cor-botao); /* Azul para os botões */
+            background-color: var(--cor-botao);
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            margin: 5px; /* Espaçamento entre os botões */
+            margin: 5px;
         }
 
         .view-btn:hover, .edit-btn:hover, .delete-btn:hover {
@@ -115,32 +95,70 @@
             font-weight: bold;
         }
 
-        .product-price img {
-            width: 24px;
-            height: 24px;
-        }
         .img-product-card {
-            height: 150px;              /* altura fixa */
-            object-fit: contain;        /* mantém a proporção da imagem */
-            width: 100%;                /* opcional, ajusta ao contêiner */
+            height: 150px;
+            object-fit: contain;
+            width: 100%;
             display: block;
-            margin: 0 auto;             /* centraliza horizontalmente */
+            margin: 0 auto;
         }
 
+        /* Estilos do Modal */
+        .modal {
+            display: none; /* Oculto por padrão */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7); /* Fundo escuro com transparência */
+            padding-top: 60px;
+        }
 
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .confirm-btn {
+            background-color: var(--cor-botao);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+
+        .confirm-btn:hover {
+            background-color: darkblue;
+        }
     </style>
 </head>
 <body>
-    <!-- <header class="header">
-        <div class="icon-wrapper">
-            <i data-lucide="menu" id="menu-btn"></i>
-        </div>
-        <img src="point back firelogo.png" alt="">
-        <div class="icon-wrapper user-icon">
-            <i data-lucide="user-circle"></i>
-        </div>
-    </header> -->
-
     <div class="button-container">
         <button type="button" onclick="window.location.href='/'" class="add-product-btn">Voltar</button>
         <h2>Produtos Cadastrados</h2>
@@ -158,30 +176,50 @@
                 <img src="../static/imagens/p_moeda_azul.png" alt="Pontos">
             </div>
 
-            <form action="/tela_produto/{{ produto.id }}" method="get">
+            <form action="/tela_produto/{{ produto.id }}" method="get" style="display:inline;">
                 <input type="hidden" name="id_produto" value="{{ produto.id }}">
-                <button type="submit" class="delete-btn">Ver</button>
+                <button type="submit" class="view-btn">Ver</button>
             </form>
 
-            <form action="/editar_produto" method="get">
+            <form action="/editar_produto" method="get" style="display:inline;">
                 <input type="hidden" name="id_produto" value="{{ produto.id }}">
-                <button type="submit" class="delete-btn">Editar</button>
+                <button type="submit" class="edit-btn">Editar</button>
             </form>
 
-            <form action="/produto/excluir" method="post" onsubmit="return confirmarExclusao();">
-                <input type="hidden" name="id_produto" value="{{ produto.id }}">
-                <button type="submit" class="delete-btn">Deletar</button>
-            </form>
-
-
-<script>
-function confirmarExclusao() {
-  return confirm("Tem certeza que deseja excluir este produto?");
-}
-</script>
-
+            <button onclick="openModal({{ produto.id }})" class="delete-btn">Deletar</button>
         </div>
         {% endfor %}
-</div>
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Confirmação de Exclusão</h2>
+            <p>Você tem certeza que deseja excluir este produto?</p>
+            <form id="deleteForm" action="/produto/excluir" method="post">
+                <input type="hidden" name="id_produto" id="productId">
+                <button type="submit" class="confirm-btn">Confirmar</button>
+                <button type="button" class="confirm-btn" onclick="closeModal()">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(productId) {
+            document.getElementById("productId").value = productId;
+            document.getElementById("myModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("myModal")) {
+                closeModal();
+            }
+        }
+    </script>
 </body>
 </html>
