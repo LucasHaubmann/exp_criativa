@@ -8,6 +8,11 @@
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
       rel="stylesheet"
     />
+         <link
+        rel="shortcut icon"
+        href="../static/imagens/pb icon.png"
+        type="image/x-icon"
+      />
   </head>
   <body>
     <header class="header">
@@ -20,6 +25,8 @@
     </header>
 
     <div class="dashboard">
+      <div id="toast" class="toast">Mensagem aqui</div>
+
       <h2>Usuários Cadastrados</h2>
 
       <div class="table-wrapper">
@@ -39,13 +46,13 @@
           <tbody>
             {% for u in usersList %}
             <tr>
-              <td>{{ u.id }}</td>
-              <td>{{ u.nome }}</td>
-              <td>{{ u.cpf }}</td>
-              <td>{{ u.dt_nasc.strftime('%d/%m/%Y') if u.dt_nasc else '' }}</td>
-              <td>{{ u.email }}</td>
-              <td>{{ u.pontos }}</td>
-              <td>{{ u.tipo }}</td>
+              <td data-label="ID">{{ u.id }}</td>
+              <td data-label="Nome">{{ u.nome }}</td>
+              <td data-label="CPF">{{ u.cpf }}</td>
+              <td data-label="Data de Nascimento">{{ u.dt_nasc.strftime('%d/%m/%Y') if u.dt_nasc else '' }}</td>
+              <td data-label="Email">{{ u.email }}</td>
+              <td data-label="Pontos">{{ u.pontos }}</td>
+              <td data-label="Tipo">{{ u.tipo }}</td>
               <td class="actions">
                 <button class="btn edit-btn" data-userid="{{ u.id }}">
                   Editar

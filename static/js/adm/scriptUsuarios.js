@@ -227,6 +227,19 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+function showToast(message, isSuccess = false) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.className = isSuccess ? "show success" : "show";
+
+  setTimeout(() => {
+    toast.classList.remove("show", "success");
+  }, 3000);
+}
+
+
 document
   .getElementById("editUserForm")
   .addEventListener("submit", async (e) => {
@@ -260,7 +273,8 @@ document
       });
 
       if (response.ok) {
-        window.location.reload();
+        showToast("Atualizações executadas com sucesso", true);
+        setTimeout(() => window.location.reload(), 1500);
       } else {
       }
     } catch (error) {
@@ -291,8 +305,8 @@ document
       });
 
       if (response.ok) {
-
-        window.location.reload();
+        showToast("Atualizações executadas com sucesso", true);
+        setTimeout(() => window.location.reload(), 1500);
       } else {
 
       }

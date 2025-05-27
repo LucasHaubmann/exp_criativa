@@ -115,23 +115,6 @@ h2 {
   background-color: #d32f2f;
 }
 
-@media (max-width: 768px) {
-  .dashboard {
-    padding: 30px;
-  }
-
-  .user-table th,
-  .user-table td {
-    font-size: 12px;
-    padding: 8px;
-  }
-
-  .btn {
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-}
-
 .modal {
   display: none;
   position: fixed;
@@ -185,3 +168,81 @@ h2 {
   text-align: center;
   display: block;
 }
+
+/* === TOAST (popup flutuante de erro) === */
+#toast {
+  visibility: hidden;
+  min-width: 250px;
+  max-width: 80%;
+  background-color: #ff4f4f; /* Red background for errors */
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px 20px;
+  position: fixed;
+  z-index: 1000;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.4s ease, top 0.4s ease;
+}
+
+#toast.show {
+  visibility: visible;
+  opacity: 1;
+  top: 5px;
+}
+
+#toast.success {
+  background-color: #4caf50; /* Green background for success */
+  color: white;
+}
+
+@media (max-width: 1200px) {
+  .dashboard {
+    padding: 10px;
+  }
+
+  .user-table, .user-table thead, .user-table tbody, .user-table th, .user-table td, .user-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .user-table thead {
+    display: none;
+  }
+
+  .user-table tr {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .user-table td {
+    text-align: right;
+    position: relative;
+    padding-left: 50%;
+    box-sizing: border-box;
+  }
+
+  .user-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    width: 45%;
+    padding-left: 10px;
+    font-weight: bold;
+    text-align: left;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+
+  
+}
+
