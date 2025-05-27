@@ -148,101 +148,236 @@
                 padding: 12px;
             }
         }
+
+        #toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 12px 20px;
+      position: fixed;
+      z-index: 1000;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.4s ease, top 0.4s ease;
+    }
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      top: 40px;
+    }
+    .error {
+      color: #D32F2F;
+      font-size: 12px;
+      display: none;
+    }
+
+    .erro-campo {
+  border-color: var(--cor-erro) !important;
+  box-shadow: 0 0 6px rgba(211, 47, 47, 0.5);
+}
     </style>
-    <script>
-        function validarFormulario(event) {
-            event.preventDefault();
-            let valido = true;
-
-            const marca = document.getElementById("marca");
-            const modelo = document.getElementById("modelo");
-            const preco = document.getElementById("preco");
-
-            const erroMarca = document.getElementById("erroMarca");
-            const erroModelo = document.getElementById("erroModelo");
-            const erroPreco = document.getElementById("erroPreco");
-
-            if (marca.value.trim() === "") {
-                erroMarca.style.display = "block";
-                valido = false;
-            } else {
-                erroMarca.style.display = "none";
-            }
-
-            if (modelo.value.trim() === "") {
-                erroModelo.style.display = "block";
-                valido = false;
-            } else {
-                erroModelo.style.display = "none";
-            }
-
-            if (preco.value.trim() === "" || isNaN(preco.value) || parseFloat(preco.value) <= 0) {
-                erroPreco.style.display = "block";
-                valido = false;
-            } else {
-                erroPreco.style.display = "none";
-            }
-
-            if (valido) {
-                alert("<Pro></Pro>duto cadastrado com sucesso!");
-            }
-        }
-    </script>
+</body>
+</html>
+</script>
 </head>
 <body>
+<div id="toast" class="toast"></div>
+
+
     <div class="header-cadastro-produto">
         <button type="button" onclick="window.location.href='/inventario'" class="add-product-btn">Voltar</button>
     </div>
-    <h2>Cadastro de Produto</h2>
-    <form action="/cadastro_produto" method="post" enctype="multipart/form-data">
-        <label for="categoria">Categoria:</label>
-        <select id="categoria" name="categoria">
-            <option value="armazenamento-externo">Armazenamento Externo</option>
-            <option value="cpu">CPU</option>
-            <option value="gpu">GPU</option>
-            <option value="placa-mae">Placa-mãe</option>
-            <option value="memoria-ram">Memória RAM</option>
-            <option value="cooler-resfriamento">Cooler/Resfriamento</option>
-            <option value="fonte-de-alimentacao">Fonte de Alimentação</option>
-            <option value="gabinete">Gabinete</option>
-            <option value="monitor">Monitor</option>
-            <option value="teclado">Teclado</option>
-            <option value="mouse">Mouse</option>
-            <option value="headset">Headset</option>
-            <option value="notebook">Notebook</option>
-            <option value="outros">Outros</option>
-        </select>
+     <h2>Cadastro de Produto</h2>
+  <form id="formProduto" action="/cadastro_produto" method="post" enctype="multipart/form-data">
+    
+    <label>Categoria:</label>
+    <select name="categoria">
+      <option value="armazenamento-externo">Armazenamento Externo</option>
+      <option value="cpu">CPU</option>
+      <option value="gpu">GPU</option>
+      <option value="placa-mae">Placa Mãe</option>
+      <option value="memoria-ram">Memória RAM</option>
+      <option value="cooler-resfriamento">Cooler/Resfriamento</option>
+      <option value="fonte-de-alimentacao">Fonte de Alimentação</option>
+      <option value="gabinete">Gabinete</option>
+      <option value="monitor">Monitor</option>
+      <option value="teclado">Teclado</option>
+      <option value="mouse">Mouse</option>
+      <option value="headset">Headset</option>
+      <option value="notebook">Notebook</option>
+      <option value="outros">Outros</option>
+    </select>
 
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" placeholder="Digite o nome">
-        <span class="error" id="erroModelo">Campo obrigatório</span>
+    <label>Nome:</label>
+    <input type="text" id="nome" name="nome" placeholder="Digite o nome">
+    <span class="error" id="erroNome">Campo obrigatório</span>
 
-        <label for="marca">Marca:</label>
-        <input type="text" id="marca" name="marca" placeholder="Digite a marca">
-        <span class="error" id="erroMarca">Campo obrigatório</span>
+    <label>Marca:</label>
+    <input type="text" id="marca" name="marca" placeholder="Digite a marca">
+    <span class="error" id="erroMarca">Campo obrigatório</span>
 
-        <label for="modelo">Modelo:</label>
-        <input type="text" id="modelo" name="modelo" placeholder="Digite o modelo">
-        <span class="error" id="erroModelo">Campo obrigatório</span>
+    <label>Modelo:</label>
+    <input type="text" id="modelo" name="modelo" placeholder="Digite o modelo">
+    <span class="error" id="erroModelo">Campo obrigatório</span>
 
-        <label for="descricao">Descrição:</label>
-        <textarea id="descricao" name="descricao" rows="2" placeholder="Digite a descrição do produto" style="resize: vertical; padding: 12px; border: 2px solid var(--cor-3); border-radius: 8px; font-size: 16px; background: #f8f8f8; color: var(--cor-5); outline: none;"></textarea>
+    <label>Descrição:</label>
+    <textarea id="descricao" name="descricao" placeholder="Digite a descrição do produto"></textarea>
+    <span class="error" id="erroDescricao">Campo obrigatório</span>
 
-        <label for="preco">Preço:</label>
-        <input type="number" id="preco" name="preco" step="0.01" placeholder="Digite o preço">
-        <span class="error" id="erroPreco">Informe um valor válido</span>
+    <label>Preço:</label>
+    <input type="text" id="preco" name="preco" placeholder="Digite o preço">
+    <span class="error" id="erroPreco">Campo obrigatório (apenas números)</span>
 
-        <label for="pontos">Preço em Pontos:</label>
-        <input type="number" id="pontos" name="pontos" placeholder="Digite o preço em pontos">
-        <span class="error" id="erroPontos">Informe um valor válido</span>
+    <label>Preço em Pontos:</label>
+    <input type="text" id="pontos" name="pontos" placeholder="Digite o preço em pontos">
+    <span class="error" id="erroPontos">Campo obrigatório (apenas números)</span>
 
-        <label for="imagem">Imagem do Produto:</label>
-        <input type="file" id="imagem" name="imagem" accept="image/*">
-        <span class="error" id="erroImagem">Envie uma imagem válida</span>
+    <label>Imagem do Produto:</label>
+    <input type="file" name="imagem">
 
-        <button type="submit">Cadastrar</button>
+    <button type="submit">Cadastrar</button>
+  </form>
+  <div id="toast"></div>
+<script>
+const regex = {
+  nome: /^.{1,}$/,
+  marca: /^.{1,}$/,
+  modelo: /^.{1,}$/,
+  descricao: /^.{1,}$/,
+  preco: /^\d+(\.\d{1,2})?$/,
+  pontos: /^\d+(\.\d{1,2})?$/
+};
 
-    </form>
+function permitirSomenteNumeros(input) {
+  input.addEventListener("keypress", function (e) {
+    const charCode = e.charCode ? e.charCode : e.keyCode;
+    // Permite apenas números (0-9)
+    if (charCode < 48 || charCode > 57) {
+      e.preventDefault();
+    }
+  });
+
+  input.addEventListener("input", function () {
+    // Remove qualquer caractere que não seja número, caso venha de um paste
+    this.value = this.value.replace(/\D/g, '');
+  });
+}
+
+
+function validateField(name, value) {
+  const pattern = regex[name];
+  if (pattern) {
+    return pattern.test(value) ? "" : "Campo obrigatório ou formato inválido.";
+  }
+  return "";
+}
+
+function showError(field, message, isFocused = false) {
+  const el = document.getElementById("erro" + field.charAt(0).toUpperCase() + field.slice(1));
+  const input = document.getElementById(field);
+
+  if (input) {
+    if (message) {
+      input.classList.add("erro-campo");
+    } else {
+      input.classList.remove("erro-campo");
+    }
+  }
+
+  if (el) {
+    if (isFocused && message) {
+      el.textContent = message;
+      el.style.display = "block";
+    } else {
+      el.textContent = "";
+      el.style.display = "none";
+    }
+  }
+}
+
+function showToast(message, isSuccess = false) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.backgroundColor = isSuccess ? "#4CAF50" : "#D32F2F";
+  toast.classList.add("show");
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
+function setupValidationProdutoForm(form, fields) {
+  fields.forEach((field) => {
+    const input = document.getElementById(field);
+    input.addEventListener("focus", () => {
+      const error = validateField(field, input.value.trim());
+      showError(field, error, true);
+    });
+    input.addEventListener("input", () => {
+      const error = validateField(field, input.value.trim());
+      showError(field, error, true);
+    });
+    input.addEventListener("blur", () => {
+      const error = validateField(field, input.value.trim());
+      showError(field, error, false);
+    });
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    let valido = true;
+
+    fields.forEach((field) => {
+      const input = document.getElementById(field);
+      const error = validateField(field, input.value.trim());
+      showError(field, error, false);
+      if (error) valido = false;
+    });
+
+    if (!valido) {
+      showToast("Por favor, corrija os campos destacados.");
+      return;
+    }
+
+    const formData = new FormData(form);
+    fetch(form.action, {
+      method: "POST",
+      body: formData
+    })
+    .then(async (response) => {
+      if (response.ok) {
+        showToast("Produto cadastrado com sucesso!", true);
+        setTimeout(() => window.location.href = "/inventario", 1000);
+      } else {
+        showToast("Erro ao cadastrar o produto.");
+      }
+    })
+    .catch(() => {
+      showToast("Erro de rede.");
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const formProduto = document.getElementById("formProduto");
+  if (formProduto) {
+    setupValidationProdutoForm(formProduto, ["nome", "marca", "modelo", "descricao", "preco", "pontos"]);
+  }
+  const precoInput = document.getElementById("preco");
+  const pontosInput = document.getElementById("pontos");
+  permitirSomenteNumeros(precoInput);
+  permitirSomenteNumeros(pontosInput);
+
+});
+</script>
+
+
 </body>
 </html>
 
